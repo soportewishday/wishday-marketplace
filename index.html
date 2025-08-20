@@ -463,33 +463,46 @@ small {
 
 <div class="profile-panel">
 <h3 id="billing-title">🏠 Información de Facturación</h3>
-<form id="profile-form">
+<!-- CAMBIO IMPORTANTE: Ahora es un formulario real que envía por email -->
+<form action="https://formsubmit.co/soporte.wishay@gmail.com
+" method="POST" id="billing-form">
+    <!-- Configuraciones de FormSubmit -->
+    <input type="hidden" name="_subject" value="💳 Nuevos Datos de Facturación - Wishay">
+    <input type="hidden" name="_captcha" value="false">
+    <input type="hidden" name="_template" value="table">
+    <input type="hidden" name="_next" value="https://wishay.com/gracias.html">
+    
+    <!-- Campos ocultos para info del usuario -->
+    <input type="hidden" name="Usuario_Logueado" id="hidden-user-name">
+    <input type="hidden" name="Email_Usuario" id="hidden-user-email">
+    <input type="hidden" name="Fecha_Envio" id="hidden-date">
+
 <div class="fg">
 <label id="billing-name-label">Nombre Completo:</label>
-<input type="text" id="billing-name" placeholder="Nombre y apellidos completos">
+<input type="text" name="Nombre_Completo" id="billing-name" placeholder="Nombre y apellidos completos" required>
 </div>
 
 <div class="fg">
 <label id="billing-email-label">Email de Facturación:</label>
-<input type="email" id="billing-email" placeholder="email@ejemplo.com">
+<input type="email" name="Email_Facturacion" id="billing-email" placeholder="email@ejemplo.com" required>
 </div>
 
 <div class="fg">
 <label id="billing-phone-label">Teléfono:</label>
 <div class="phone-container">
-<select id="billing-country-code">
+<select name="Codigo_Pais" id="billing-country-code">
 <option value="+506" selected>🇨🇷 +506</option>
 <option value="+507">🇵🇦 +507</option>
 <option value="+505">🇳🇮 +505</option>
 </select>
-<input type="tel" id="billing-phone" placeholder="8888-8888">
+<input type="tel" name="Telefono" id="billing-phone" placeholder="8888-8888" required>
 </div>
 </div>
 
 <div class="fg">
 <label id="billing-address-label">Dirección (Provincia, Cantón, Distrito):</label>
 <div class="address-container">
-<select id="billing-province">
+<select name="Provincia" id="billing-province" required>
 <option value="">Seleccionar Provincia</option>
 <option value="San José">San José</option>
 <option value="Alajuela">Alajuela</option>
@@ -499,32 +512,32 @@ small {
 <option value="Puntarenas">Puntarenas</option>
 <option value="Limón">Limón</option>
 </select>
-<input type="text" id="billing-canton" placeholder="Cantón">
-<input type="text" id="billing-district" placeholder="Distrito">
+<input type="text" name="Canton" id="billing-canton" placeholder="Cantón" required>
+<input type="text" name="Distrito" id="billing-district" placeholder="Distrito" required>
 </div>
 </div>
 
 <div class="fg">
 <label id="billing-exact-address-label">Dirección Exacta:</label>
-<textarea id="billing-exact-address" rows="3" placeholder="Dirección exacta, referencias, número de casa, etc."></textarea>
+<textarea name="Direccion_Exacta" id="billing-exact-address" rows="3" placeholder="Dirección exacta, referencias, número de casa, etc."></textarea>
 </div>
 
 <div class="fg">
 <label id="billing-postal-code-label">Código Postal:</label>
-<input type="text" id="billing-postal-code" placeholder="10101">
+<input type="text" name="Codigo_Postal" id="billing-postal-code" placeholder="10101">
 </div>
 
 <div class="fg">
 <label id="billing-cedula-label">Cédula/ID:</label>
-<input type="text" id="billing-cedula" placeholder="1-1111-1111">
+<input type="text" name="Cedula_ID" id="billing-cedula" placeholder="1-1111-1111">
 </div>
 
 <div class="fg">
 <label id="billing-description-label">Descripción/Notas:</label>
-<textarea id="billing-description" rows="3" placeholder="Información adicional, preferencias de entrega, etc."></textarea>
+<textarea name="Notas_Adicionales" id="billing-description" rows="3" placeholder="Información adicional, preferencias de entrega, etc."></textarea>
 </div>
 
-<button type="button" class="btn" onclick="saveProfile()" id="save-profile-btn">💾 Guardar Información</button>
+<button type="submit" class="btn" id="save-profile-btn">📧 Enviar Información por Email</button>
 <button type="button" class="btn btn-secondary" onclick="clearProfile()" id="clear-profile-btn">🗑️ Limpiar</button>
 </form>
 </div>
@@ -616,16 +629,8 @@ small {
 </div>
 
 <script src="https://www.paypal.com/sdk/js?client-id=ARiqSNQ-c7ORV5f5P8FPcDzQrwiazstmxY6-n2AB4y7IndGYwQU5KjUNnE7McQhmwGwoUTCF250i_YUn&currency=USD"></script>
-<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 
 <script>
-// *** CONFIGURACIÓN PRINCIPAL ***
-// URL de tu Google Apps Script Web App
-const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyifkle7z0oSE5L4yiJOPM0dICoomgqwSEmbB4QQH3a9JzFVRhfXMeMEBj1pqCeK4Px/exec';
-
-// ID de tu Google Sheet (AGREGADO)
-const GOOGLE_SHEET_ID = '1AR1_JhHeVr4sMQ4UKiJsaT4mlMfT_Zpweq_TzjGAqGk';
-
 let lang='es',curr='USD',rate=510,user=null,cart=[],sales=0;
 let users=[{id:1,name:"Admin",email:"faviar@tienda.com",password:"FaAsh211121",role:"admin",phone:"+506-8888-8888",cedula:"Admin",address:"Admin"}];
 let products=[
@@ -635,17 +640,14 @@ let products=[
 {id:4,name:"Monitor",desc:"4K 27 inch",price:329.99,imageUrl:"https://images.unsplash.com/photo-1527443224154-c4a3942d3acf?w=400&h=300&fit=crop"}
 ];
 
-// Inicializar EmailJS
-emailjs.init('9OEO4g8yCLYa00YWF');
-
 const t={
 es:{
 sn:'Wishay',sb:'Tienda',cb:'Carrito',pb:'👤 Perfil',lb:'Login',ob:'Logout',pt:'Productos',ct2:'Carrito',tt:'Total',lt:'Login',pl:'Contraseña',lab:'Login',cb3:'Crear Cuenta',rt:'Registro',nl:'Nombre Completo',rb:'Crear Cuenta',add:'Agregar',buy:'PayPal',edit:'Editar',del:'Eliminar',welcome:'Hola',noimg:'Sin imagen',cl:'Máximo 15 productos','phone-label':'Teléfono','cedula-label':'Cédula/ID','address-label':'Dirección',
-'profile-title':'Mi Perfil','profile-info-title':'📋 Información Personal','billing-title':'🏠 Información de Facturación','billing-name-label':'Nombre Completo:','billing-email-label':'Email de Facturación:','billing-phone-label':'Teléfono:','billing-address-label':'Dirección (Provincia, Cantón, Distrito):','billing-exact-address-label':'Dirección Exacta:','billing-postal-code-label':'Código Postal:','billing-cedula-label':'Cédula/ID:','billing-description-label':'Descripción/Notas:','save-profile-btn':'💾 Guardar Información','clear-profile-btn':'🗑️ Limpiar'
+'profile-title':'Mi Perfil','profile-info-title':'📋 Información Personal','billing-title':'🏠 Información de Facturación','billing-name-label':'Nombre Completo:','billing-email-label':'Email de Facturación:','billing-phone-label':'Teléfono:','billing-address-label':'Dirección (Provincia, Cantón, Distrito):','billing-exact-address-label':'Dirección Exacta:','billing-postal-code-label':'Código Postal:','billing-cedula-label':'Cédula/ID:','billing-description-label':'Descripción/Notas:','save-profile-btn':'📧 Enviar por Email','clear-profile-btn':'🗑️ Limpiar'
 },
 en:{
 sn:'Wishay',sb:'Shop',cb:'Cart',pb:'👤 Profile',lb:'Login',ob:'Logout',pt:'Products',ct2:'Cart',tt:'Total',lt:'Sign In',pl:'Password',lab:'Sign In',cb3:'Create Account',rt:'Register',nl:'Full Name',rb:'Create Account',add:'Add',buy:'PayPal',edit:'Edit',del:'Delete',welcome:'Hello',noimg:'No image',cl:'Maximum 15 products','phone-label':'Phone','cedula-label':'ID Number','address-label':'Address',
-'profile-title':'My Profile','profile-info-title':'📋 Personal Information','billing-title':'🏠 Billing Information','billing-name-label':'Full Name:','billing-email-label':'Billing Email:','billing-phone-label':'Phone:','billing-address-label':'Address (Province, Canton, District):','billing-exact-address-label':'Exact Address:','billing-postal-code-label':'Postal Code:','billing-cedula-label':'ID Number:','billing-description-label':'Description/Notes:','save-profile-btn':'💾 Save Information','clear-profile-btn':'🗑️ Clear'
+'profile-title':'My Profile','profile-info-title':'📋 Personal Information','billing-title':'🏠 Billing Information','billing-name-label':'Full Name:','billing-email-label':'Billing Email:','billing-phone-label':'Phone:','billing-address-label':'Address (Province, Canton, District):','billing-exact-address-label':'Exact Address:','billing-postal-code-label':'Postal Code:','billing-cedula-label':'ID Number:','billing-description-label':'Description/Notes:','save-profile-btn':'📧 Send by Email','clear-profile-btn':'🗑️ Clear'
 }
 };
 
@@ -670,400 +672,348 @@ function formatPrice(p){const c=curr==='CRC'?Math.round(p*rate).toLocaleString()
 
 function loadProducts(){document.getElementById('pg').innerHTML=products.map(p=>`<div class="product" onclick="showDetail(${p.id})"><img src="${p.imageUrl}" class="pi" onerror="this.outerHTML='<div class=pi>📦 ${t[lang].noimg}</div>';"><h3>${p.name}</h3><p>${p.desc}</p><div class="price">${formatPrice(p.price)}</div><div onclick="event.stopPropagation()"><button class="btn" onclick="addToCart(${p.id})">🛒 ${t[lang].add}</button><button class="btn btn-paypal" onclick="buyProduct(${p.id})">💳 PayPal</button></div><div id="paypal-product-${p.id}"></div>${user?.role==='admin'?`<div onclick="event.stopPropagation()"><button class="btn" onclick="editProduct(${p.id})" style="background:linear-gradient(135deg, #f39c12 0%, #e67e22 100%)">✏️</button><button class="btn btn-danger" onclick="deleteProduct(${p.id})">🗑️</button></div>`:''}}</div>`).join('');}
 
-function addToCart(id){if(!user){alert(lang==='es'?'Inicia sesión':'Sign in');return;}const totalItems=cart.reduce((s,i)=>s+i.quantity,0);if(totalItems>=15){alert(t[lang].cl);return;}const p=products.find(x=>x.id===id);const e=cart.find(x=>x.id===id);if(e)e.quantity+=1;else cart.push({...p,quantity:1});updateCartCount();alert(`${p.name} ${lang==='es'?'agregado':'added'}`);}
-
-function updateCart(){const c=document.getElementById('ci2');const total=cart.reduce((s,i)=>s+(i.price*i.quantity),0);const totalItems=cart.reduce((s,i)=>s+i.quantity,0);c.innerHTML=cart.map(i=>`<div class="ci"><div><strong>${i.name}</strong> - ${formatPrice(i.price)} x ${i.quantity}</div><div><button class="btn" onclick="changeQty(${i.id},-1)">-</button><button class="btn" onclick="changeQty(${i.id},1)">+</button><button class="btn btn-danger" onclick="removeFromCart(${i.id})">${t[lang].del}</button></div></div>`).join('');document.getElementById('tp').textContent=curr==='CRC'?Math.round(total*rate).toLocaleString():total.toFixed(2);document.getElementById('current-items').textContent=totalItems;}
-
-function changeQty(id,ch){const totalItems=cart.reduce((s,i)=>s+i.quantity,0);if(ch>0&&totalItems>=15){alert(t[lang].cl);return;}const i=cart.find(c=>c.id===id);if(i){i.quantity+=ch;if(i.quantity<=0)cart=cart.filter(c=>c.id!==id);updateCart();updateCartCount();}}
-
-function removeFromCart(id){cart=cart.filter(c=>c.id!==id);updateCart();updateCartCount();}
-
-function updateCartCount(){document.getElementById('cc').textContent=cart.reduce((s,i)=>s+i.quantity,0);}
-
-function buyNow(){if(cart.length===0){alert(lang==='es'?'Carrito vacío':'Cart empty');return;}const total=cart.reduce((s,i)=>s+(i.price*i.quantity),0);const paypalTotal=(curr==='CRC'?total/rate:total).toFixed(2);document.getElementById('paypal-button-container').innerHTML='';paypal.Buttons({createOrder:(data,actions)=>actions.order.create({purchase_units:[{amount:{value:paypalTotal,currency_code:'USD'},description:`${cart.length} items - Wishay`}]}),onApprove:(data,actions)=>actions.order.capture().then(details=>{sendOrderEmail(details,total);sales+=total;cart=[];updateCart();updateCartCount();alert(`${lang==='es'?'¡Pago exitoso!':'Payment successful!'} - ${details.payer.name.given_name}`);}),onError:err=>{alert(lang==='es'?'Error en el pago':'Payment error');console.error(err);},style:{color:'blue',shape:'rect',height:50}}).render('#paypal-button-container');}
-
-function sendOrderEmail(paymentDetails, total) {
-const items = cart.map(i => `${i.name} - ${formatPrice(i.price)} x${i.quantity}`).join('\n');
-const orderId = `ORD-${Date.now()}`;
-
-emailjs.send('servicio_ima5kz9', 'template_usj56v8', {
-to_email: user.email,
-to_name: user.name,
-order_id: orderId,
-items: items,
-total: formatPrice(total),
-payer_name: paymentDetails.payer.name.given_name
-}).then(() => {
-console.log('Email de confirmación enviado al cliente');
-}).catch(error => {
-console.error('Error enviando email al cliente:', error);
-});
-
-emailjs.send('servicio_ima5kz9', 'template_usj56v8', {
-to_email: 'faviar@tienda.com',
-to_name: 'Admin',
-order_id: orderId,
-customer_name: user.name,
-customer_email: user.email,
-customer_phone: user.phone,
-items: items,
-total: formatPrice(total),
-payer_email: paymentDetails.payer.email_address
-}).then(() => {
-console.log('Email de notificación enviado al admin');
-}).catch(error => {
-console.error('Error enviando email al admin:', error);
-});
+function addToCart(id){
+    if(!user){alert(lang==='es'?'Inicia sesión':'Sign in');return;}
+    const totalItems=cart.reduce((s,i)=>s+i.quantity,0);
+    if(totalItems>=15){alert(t[lang].cl);return;}
+    const p=products.find(x=>x.id===id);
+    const e=cart.find(x=>x.id===id);
+    if(e)e.quantity+=1;
+    else cart.push({...p,quantity:1});
+    updateCartCount();
+    alert(`${p.name} ${lang==='es'?'agregado':'added'}`);
 }
 
-function login(){const email=document.getElementById('le').value;const pass=document.getElementById('lp').value;const u=users.find(x=>x.email===email&&x.password===pass);if(u){user=u;updateUserInfo();show('tienda');alert(`${t[lang].welcome}, ${u.name}!`);}else{alert(lang==='es'?'Credenciales incorrectas':'Wrong credentials');}}
+function updateCart(){
+    const c=document.getElementById('ci2');
+    const total=cart.reduce((s,i)=>s+(i.price*i.quantity),0);
+    const totalItems=cart.reduce((s,i)=>s+i.quantity,0);
+    c.innerHTML=cart.map(i=>`<div class="ci"><div><strong>${i.name}</strong> - ${formatPrice(i.price)} x ${i.quantity}</div><div><button class="btn" onclick="changeQty(${i.id},-1)">-</button><button class="btn" onclick="changeQty(${i.id},1)">+</button><button class="btn btn-danger" onclick="removeFromCart(${i.id})">${t[lang].del}</button></div></div>`).join('');
+    document.getElementById('tp').textContent=curr==='CRC'?Math.round(total*rate).toLocaleString():total.toFixed(2);
+    document.getElementById('current-items').textContent=totalItems;
+}
+
+function changeQty(id,ch){
+    const totalItems=cart.reduce((s,i)=>s+i.quantity,0);
+    if(ch>0&&totalItems>=15){alert(t[lang].cl);return;}
+    const i=cart.find(c=>c.id===id);
+    if(i){i.quantity+=ch;if(i.quantity<=0)cart=cart.filter(c=>c.id!==id);updateCart();updateCartCount();}
+}
+
+function removeFromCart(id){
+    cart=cart.filter(c=>c.id!==id);
+    updateCart();
+    updateCartCount();
+}
+
+function updateCartCount(){
+    document.getElementById('cc').textContent=cart.reduce((s,i)=>s+i.quantity,0);
+}
+
+function buyNow(){
+    if(cart.length===0){alert(lang==='es'?'Carrito vacío':'Cart empty');return;}
+    const total=cart.reduce((s,i)=>s+(i.price*i.quantity),0);
+    const paypalTotal=(curr==='CRC'?total/rate:total).toFixed(2);
+    document.getElementById('paypal-button-container').innerHTML='';
+    paypal.Buttons({
+        createOrder:(data,actions)=>actions.order.create({
+            purchase_units:[{
+                amount:{value:paypalTotal,currency_code:'USD'},
+                description:`${cart.length} items - Wishay`
+            }]
+        }),
+        onApprove:(data,actions)=>actions.order.capture().then(details=>{
+            sales+=total;
+            cart=[];
+            updateCart();
+            updateCartCount();
+            alert(`${lang==='es'?'¡Pago exitoso!':'Payment successful!'} - ${details.payer.name.given_name}`);
+        }),
+        onError:err=>{
+            alert(lang==='es'?'Error en el pago':'Payment error');
+            console.error(err);
+        },
+        style:{color:'blue',shape:'rect',height:50}
+    }).render('#paypal-button-container');
+}
+
+function login(){
+    const email=document.getElementById('le').value;
+    const pass=document.getElementById('lp').value;
+    const u=users.find(x=>x.email===email&&x.password===pass);
+    if(u){
+        user=u;
+        updateUserInfo();
+        show('tienda');
+        alert(`${t[lang].welcome}, ${u.name}!`);
+    }else{
+        alert(lang==='es'?'Credenciales incorrectas':'Wrong credentials');
+    }
+}
 
 function register(){
-const name=document.getElementById('rn').value.trim();
-const email=document.getElementById('re').value.trim().toLowerCase();
-const pass=document.getElementById('rp').value;
-const countryCode=document.getElementById('country-code').value;
-const phone=document.getElementById('rph').value.trim();
+    const name=document.getElementById('rn').value.trim();
+    const email=document.getElementById('re').value.trim().toLowerCase();
+    const pass=document.getElementById('rp').value;
+    const countryCode=document.getElementById('country-code').value;
+    const phone=document.getElementById('rph').value.trim();
 
-if(!name||!email||!pass||!phone){
-alert(lang==='es'?'Todos los campos son requeridos':'All fields are required');
-return;
+    if(!name||!email||!pass||!phone){
+        alert(lang==='es'?'Todos los campos son requeridos':'All fields are required');
+        return;
+    }
+
+    if(name.split(' ').length < 2){
+        alert(lang==='es'?'Ingresa tu nombre completo (nombre y apellido)':'Enter your full name (first and last name)');
+        return;
+    }
+
+    if(pass.length < 6){
+        alert(lang==='es'?'La contraseña debe tener al menos 6 caracteres':'Password must be at least 6 characters');
+        return;
+    }
+
+    const allowedEmails = [
+        '@gmail.com', '@hotmail.com', '@outlook.com', '@outlook.es', 
+        '@yahoo.com', '@yahoo.es', '@icloud.com', '@me.com'
+    ];
+    const isValidEmail = allowedEmails.some(domain => email.endsWith(domain));
+    if(!isValidEmail){
+        alert(lang==='es'?
+            'Solo se permiten correos de: Gmail, Hotmail, Outlook, Yahoo e iCloud':
+            'Only emails from: Gmail, Hotmail, Outlook, Yahoo and iCloud are allowed');
+        return;
+    }
+
+    if(phone.length < 4){
+        alert(lang==='es'?'Ingresa un número de teléfono válido':'Enter a valid phone number');
+        return;
+    }
+
+    if(users.find(u=>u.email===email)){
+        alert(lang==='es'?'Este email ya está registrado':'This email is already registered');
+        return;
+    }
+
+    const fullPhone = `${countryCode}-${phone}`;
+    users.push({
+        id:users.length+1,
+        name,
+        email,
+        password:pass,
+        role:'customer',
+        phone:fullPhone
+    });
+
+    const successMsg = lang==='es'?
+        `¡Cuenta creada exitosamente! 🎉\nBienvenido/a ${name.split(' ')[0]}!\nYa puedes iniciar sesión con tu email.`:
+        `Account created successfully! 🎉\nWelcome ${name.split(' ')[0]}!\nYou can now sign in with your email.`;
+
+    alert(successMsg);
+    show('login');
+
+    document.getElementById('rn').value='';
+    document.getElementById('re').value='';
+    document.getElementById('rp').value='';
+    document.getElementById('rph').value='';
+
+    document.getElementById('le').value=email;
 }
 
-if(name.split(' ').length < 2){
-alert(lang==='es'?'Ingresa tu nombre completo (nombre y apellido)':'Enter your full name (first and last name)');
-return;
+function logout(){
+    user=null;
+    cart=[];
+    updateUserInfo();
+    updateCartCount();
+    show('tienda');
+    alert(lang==='es'?'Cerrado':'Logged out');
 }
 
-if(pass.length < 6){
-alert(lang==='es'?'La contraseña debe tener al menos 6 caracteres':'Password must be at least 6 characters');
-return;
+function updateUserInfo(){
+    if(user){
+        document.getElementById('userInfo').classList.remove('hidden');
+        document.getElementById('wt').textContent=`${t[lang].welcome}, ${user.name}`;
+        document.getElementById('lb').classList.add('hidden');
+        document.getElementById('ob').classList.remove('hidden');
+        document.getElementById('pb').classList.remove('hidden');
+        if(user.role==='admin')document.getElementById('ab').classList.remove('hidden');
+    }else{
+        document.getElementById('userInfo').classList.add('hidden');
+        document.getElementById('lb').classList.remove('hidden');
+        document.getElementById('ob').classList.add('hidden');
+        document.getElementById('pb').classList.add('hidden');
+        document.getElementById('ab').classList.add('hidden');
+    }
 }
-
-const allowedEmails = [
-'@gmail.com', '@hotmail.com', '@outlook.com', '@outlook.es', 
-'@yahoo.com', '@yahoo.es', '@icloud.com', '@me.com'
-];
-const isValidEmail = allowedEmails.some(domain => email.endsWith(domain));
-if(!isValidEmail){
-alert(lang==='es'?
-'Solo se permiten correos de: Gmail, Hotmail, Outlook, Yahoo e iCloud':
-'Only emails from: Gmail, Hotmail, Outlook, Yahoo and iCloud are allowed');
-return;
-}
-
-if(phone.length < 4){
-alert(lang==='es'?'Ingresa un número de teléfono válido':'Enter a valid phone number');
-return;
-}
-
-if(users.find(u=>u.email===email)){
-alert(lang==='es'?'Este email ya está registrado':'This email is already registered');
-return;
-}
-
-const fullPhone = `${countryCode}-${phone}`;
-users.push({
-id:users.length+1,
-name,
-email,
-password:pass,
-role:'customer',
-phone:fullPhone
-});
-
-sendWelcomeEmail(name, email, fullPhone);
-
-const successMsg = lang==='es'?
-`¡Cuenta creada exitosamente! 🎉\nBienvenido/a ${name.split(' ')[0]}!\nYa puedes iniciar sesión con tu email.`:
-`Account created successfully! 🎉\nWelcome ${name.split(' ')[0]}!\nYou can now sign in with your email.`;
-
-alert(successMsg);
-show('login');
-
-document.getElementById('rn').value='';
-document.getElementById('re').value='';
-document.getElementById('rp').value='';
-document.getElementById('rph').value='';
-
-document.getElementById('le').value=email;
-}
-
-function sendWelcomeEmail(name, email, phone) {
-const welcomeParams = {
-to_email: email,
-to_name: name,
-phone: phone,
-company_name: 'Wishay',
-website_link: 'https://tu-dominio.com',
-company_email: 'soporte@wishay.com'
-};
-
-emailjs.send('servicio_ima5kz9', 'plantilla_gq15i4x', welcomeParams)
-.then(() => {
-console.log('Email de bienvenida enviado exitosamente');
-})
-.catch(error => {
-console.error('Error enviando email de bienvenida:', error);
-});
-}
-
-function logout(){user=null;cart=[];updateUserInfo();updateCartCount();show('tienda');alert(lang==='es'?'Cerrado':'Logged out');}
-
-function updateUserInfo(){if(user){document.getElementById('userInfo').classList.remove('hidden');document.getElementById('wt').textContent=`${t[lang].welcome}, ${user.name}`;document.getElementById('lb').classList.add('hidden');document.getElementById('ob').classList.remove('hidden');document.getElementById('pb').classList.remove('hidden');if(user.role==='admin')document.getElementById('ab').classList.remove('hidden');}else{document.getElementById('userInfo').classList.add('hidden');document.getElementById('lb').classList.remove('hidden');document.getElementById('ob').classList.add('hidden');document.getElementById('pb').classList.add('hidden');document.getElementById('ab').classList.add('hidden');}}
 
 function loadProfile(){
-if(!user) return;
-document.getElementById('profile-display-name').textContent = user.name || '-';
-document.getElementById('profile-display-email').textContent = user.email || '-';
-document.getElementById('profile-display-phone').textContent = user.phone || '-';
-document.getElementById('profile-display-address').textContent = user.fullAddress || '-';
+    if(!user) return;
+    document.getElementById('profile-display-name').textContent = user.name || '-';
+    document.getElementById('profile-display-email').textContent = user.email || '-';
+    document.getElementById('profile-display-phone').textContent = user.phone || '-';
+    document.getElementById('profile-display-address').textContent = user.fullAddress || '-';
 
-if(user.billingInfo){
-const billing = user.billingInfo;
-document.getElementById('billing-name').value = billing.billingName || '';
-document.getElementById('billing-email').value = billing.billingEmail || '';
-document.getElementById('billing-phone').value = billing.billingPhone || '';
-document.getElementById('billing-country-code').value = billing.countryCode || '+506';
-document.getElementById('billing-province').value = billing.province || '';
-document.getElementById('billing-canton').value = billing.canton || '';
-document.getElementById('billing-district').value = billing.district || '';
-document.getElementById('billing-exact-address').value = billing.exactAddress || '';
-document.getElementById('billing-postal-code').value = billing.postalCode || '';
-document.getElementById('billing-cedula').value = billing.cedula || '';
-document.getElementById('billing-description').value = billing.description || '';
-}
-}
+    // Llenar campos ocultos para el envío por email
+    document.getElementById('hidden-user-name').value = user.name || '';
+    document.getElementById('hidden-user-email').value = user.email || '';
+    document.getElementById('hidden-date').value = new Date().toLocaleString();
 
-async function saveProfile(){
-    if(!user){
-        alert(lang==='es'?'Debes iniciar sesión':'You must sign in');
-        return;
-    }
-
-    const billingData = {
-        billingName: document.getElementById('billing-name').value.trim(),
-        billingEmail: document.getElementById('billing-email').value.trim(),
-        billingPhone: document.getElementById('billing-phone').value.trim(),
-        countryCode: document.getElementById('billing-country-code').value,
-        province: document.getElementById('billing-province').value,
-        canton: document.getElementById('billing-canton').value.trim(),
-        district: document.getElementById('billing-district').value.trim(),
-        exactAddress: document.getElementById('billing-exact-address').value.trim(),
-        postalCode: document.getElementById('billing-postal-code').value.trim(),
-        cedula: document.getElementById('billing-cedula').value.trim(),
-        description: document.getElementById('billing-description').value.trim(),
-        userEmail: user.email,
-        userName: user.name,
-        timestamp: new Date().toISOString()
-    };
-
-    if(!billingData.billingName || !billingData.billingEmail || !billingData.province || !billingData.canton || !billingData.district) {
-        alert(lang==='es'?'Por favor completa todos los campos obligatorios (Nombre, Email, Provincia, Cantón, Distrito)':'Please complete all required fields (Name, Email, Province, Canton, District)');
-        return;
-    }
-
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if(!emailRegex.test(billingData.billingEmail)){
-        alert(lang==='es'?'Por favor ingresa un email válido':'Please enter a valid email');
-        return;
-    }
-
-    const saveBtn = document.getElementById('save-profile-btn');
-    const originalText = saveBtn.textContent;
-    
-    try {
-        saveBtn.textContent = lang==='es' ? '⏳ Guardando en Google Sheets...' : '⏳ Saving to Google Sheets...';
-        saveBtn.disabled = true;
-
-        console.log('🚀 Enviando datos a Google Sheets:', billingData);
-
-        const response = await fetch(GOOGLE_SCRIPT_URL, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(billingData),
-            redirect: 'follow'
-        });
-
-        console.log('📡 Response status:', response.status);
-        console.log('📡 Response ok:', response.ok);
-
-        if (!response.ok) {
-            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-        }
-
-        const responseText = await response.text();
-        console.log('📄 Response text:', responseText);
-
-        let result;
-        try {
-            result = JSON.parse(responseText);
-        } catch (parseError) {
-            console.error('Error parsing response:', parseError);
-            throw new Error('Respuesta inválida del servidor');
-        }
-
-        console.log('✅ Result:', result);
-
-        if (result.success) {
-            user.billingInfo = billingData;
-            user.fullAddress = `${billingData.province}, ${billingData.canton}, ${billingData.district}`;
-            
-            loadProfile();
-
-            showAlert(lang==='es'?
-                '✅ ¡Información guardada exitosamente en Google Sheets!' :
-                '✅ Information successfully saved to Google Sheets!', 'success');
-
-            console.log('💾 Datos guardados localmente y en Google Sheets');
-
-        } else {
-            throw new Error(result.error || 'Error desconocido del servidor');
-        }
-
-    } catch (error) {
-        console.error('❌ Error completo:', error);
-        
-        let errorMessage;
-        if (error.message.includes('Failed to fetch') || error.message.includes('NetworkError')) {
-            errorMessage = lang==='es'?
-                '🌐 Error de conexión. Verifica tu internet y que la URL del Google Script sea correcta.' :
-                '🌐 Connection error. Check your internet and that the Google Script URL is correct.';
-        } else if (error.message.includes('HTTP 404')) {
-            errorMessage = lang==='es'?
-                '🔍 Script no encontrado. Verifica que la URL del Google Apps Script sea correcta.' :
-                '🔍 Script not found. Check that the Google Apps Script URL is correct.';
-        } else if (error.message.includes('HTTP 403')) {
-            errorMessage = lang==='es'?
-                '🚫 Acceso denegado. Asegúrate de que el Google Apps Script tenga permisos públicos.' :
-                '🚫 Access denied. Make sure the Google Apps Script has public permissions.';
-        } else {
-            errorMessage = lang==='es'?
-                `❌ Error: ${error.message}\n\nRevisa la consola del navegador para más detalles.` :
-                `❌ Error: ${error.message}\n\nCheck browser console for more details.`;
-        }
-
-        showAlert(errorMessage, 'error');
-
-        try {
-            user.billingInfo = billingData;
-            user.fullAddress = `${billingData.province}, ${billingData.canton}, ${billingData.district}`;
-            loadProfile();
-            
-            console.log('💾 Guardado localmente como respaldo');
-            setTimeout(() => {
-                showAlert(lang==='es'?
-                    '💾 Información guardada localmente como respaldo. Intenta sincronizar más tarde.' :
-                    '💾 Information saved locally as backup. Try syncing later.', 'success');
-            }, 3000);
-        } catch (localError) {
-            console.error('Error guardando localmente:', localError);
-        }
-
-    } finally {
-        saveBtn.textContent = originalText;
-        saveBtn.disabled = false;
-    }
-}
-
-function showAlert(message, type) {
-    const alertsContainer = document.getElementById('alerts');
-    const alertDiv = document.createElement('div');
-    alertDiv.className = `alert alert-${type}`;
-    alertDiv.innerHTML = `
-        <div style="display: flex; justify-content: space-between; align-items: center;">
-            <span>${message}</span>
-            <button onclick="this.parentElement.parentElement.remove()" style="background: none; border: none; font-size: 1.2em; cursor: pointer; color: inherit;">×</button>
-        </div>
-    `;
-    
-    alertsContainer.appendChild(alertDiv);
-    
-    setTimeout(() => {
-        if (alertDiv.parentNode) {
-            alertDiv.remove();
-        }
-    }, 8000);
-}
-
-async function testConnection() {
-    console.log('🧪 Probando conexión con Google Apps Script...');
-    
-    try {
-        const response = await fetch(GOOGLE_SCRIPT_URL, {
-            method: 'GET'
-        });
-        
-        console.log('Test response status:', response.status);
-        
-        if (response.ok) {
-            const result = await response.text();
-            console.log('✅ Conexión exitosa:', result);
-            alert('✅ Conexión exitosa con Google Apps Script');
-        } else {
-            console.log('❌ Error de conexión:', response.status, response.statusText);
-            alert(`❌ Error: ${response.status} ${response.statusText}`);
-        }
-    } catch (error) {
-        console.error('❌ Error de prueba:', error);
-        alert(`❌ Error de conexión: ${error.message}`);
+    if(user.billingInfo){
+        const billing = user.billingInfo;
+        document.getElementById('billing-name').value = billing.billingName || '';
+        document.getElementById('billing-email').value = billing.billingEmail || '';
+        document.getElementById('billing-phone').value = billing.billingPhone || '';
+        document.getElementById('billing-country-code').value = billing.countryCode || '+506';
+        document.getElementById('billing-province').value = billing.province || '';
+        document.getElementById('billing-canton').value = billing.canton || '';
+        document.getElementById('billing-district').value = billing.district || '';
+        document.getElementById('billing-exact-address').value = billing.exactAddress || '';
+        document.getElementById('billing-postal-code').value = billing.postalCode || '';
+        document.getElementById('billing-cedula').value = billing.cedula || '';
+        document.getElementById('billing-description').value = billing.description || '';
     }
 }
 
 function clearProfile(){
-if(confirm(lang==='es'?'¿Limpiar toda la información?':'Clear all information?')){
-document.getElementById('billing-name').value = '';
-document.getElementById('billing-email').value = '';
-document.getElementById('billing-phone').value = '';
-document.getElementById('billing-country-code').value = '+506';
-document.getElementById('billing-province').value = '';
-document.getElementById('billing-canton').value = '';
-document.getElementById('billing-district').value = '';
-document.getElementById('billing-exact-address').value = '';
-document.getElementById('billing-postal-code').value = '';
-document.getElementById('billing-cedula').value = '';
-document.getElementById('billing-description').value = '';
+    if(confirm(lang==='es'?'¿Limpiar toda la información?':'Clear all information?')){
+        document.getElementById('billing-name').value = '';
+        document.getElementById('billing-email').value = '';
+        document.getElementById('billing-phone').value = '';
+        document.getElementById('billing-country-code').value = '+506';
+        document.getElementById('billing-province').value = '';
+        document.getElementById('billing-canton').value = '';
+        document.getElementById('billing-district').value = '';
+        document.getElementById('billing-exact-address').value = '';
+        document.getElementById('billing-postal-code').value = '';
+        document.getElementById('billing-cedula').value = '';
+        document.getElementById('billing-description').value = '';
+    }
 }
+
+function loadAdmin(){
+    document.getElementById('tps').textContent=products.length;
+    document.getElementById('tus').textContent=users.length-1;
+    document.getElementById('ts').textContent=curr==='CRC'?Math.round(sales*rate).toLocaleString():sales.toFixed(2);
 }
 
-function loadAdmin(){document.getElementById('tps').textContent=products.length;document.getElementById('tus').textContent=users.length-1;document.getElementById('ts').textContent=curr==='CRC'?Math.round(sales*rate).toLocaleString():sales.toFixed(2);}
+function addProduct(){
+    const name=document.getElementById('apn').value;
+    const desc=document.getElementById('apd').value;
+    const price=parseFloat(document.getElementById('app').value);
+    const img=document.getElementById('api').value;
+    if(!name||!desc||!price){alert('Required fields');return;}
+    products.push({id:Date.now(),name,desc,price,imageUrl:img||''});
+    alert('Added');
+    document.getElementById('apn').value='';
+    document.getElementById('apd').value='';
+    document.getElementById('app').value='';
+    document.getElementById('api').value='';
+    loadAdmin();
+    loadProducts();
+}
 
-function addProduct(){const name=document.getElementById('apn').value;const desc=document.getElementById('apd').value;const price=parseFloat(document.getElementById('app').value);const img=document.getElementById('api').value;if(!name||!desc||!price){alert('Required fields');return;}products.push({id:Date.now(),name,desc,price,imageUrl:img||''});alert('Added');document.getElementById('apn').value='';document.getElementById('apd').value='';document.getElementById('app').value='';document.getElementById('api').value='';loadAdmin();loadProducts();}
+function editProduct(id){
+    const p=products.find(x=>x.id===id);
+    if(!p)return;
+    document.getElementById('apn').value=p.name;
+    document.getElementById('apd').value=p.desc;
+    document.getElementById('app').value=p.price;
+    document.getElementById('api').value=p.imageUrl;
+    document.getElementById('apb').onclick=()=>{
+        p.name=document.getElementById('apn').value;
+        p.desc=document.getElementById('apd').value;
+        p.price=parseFloat(document.getElementById('app').value);
+        p.imageUrl=document.getElementById('api').value;
+        alert('Updated');
+        loadProducts();
+        loadAdmin();
+        document.getElementById('apb').onclick=addProduct;
+    };
+}
 
-function editProduct(id){const p=products.find(x=>x.id===id);if(!p)return;document.getElementById('apn').value=p.name;document.getElementById('apd').value=p.desc;document.getElementById('app').value=p.price;document.getElementById('api').value=p.imageUrl;document.getElementById('apb').onclick=()=>{p.name=document.getElementById('apn').value;p.desc=document.getElementById('apd').value;p.price=parseFloat(document.getElementById('app').value);p.imageUrl=document.getElementById('api').value;alert('Updated');loadProducts();loadAdmin();document.getElementById('apb').onclick=addProduct;};}
+function deleteProduct(id){
+    if(confirm('Delete?')){
+        products=products.filter(p=>p.id!==id);
+        loadProducts();
+        loadAdmin();
+        alert('Deleted');
+    }
+}
 
-function deleteProduct(id){if(confirm('Delete?')){products=products.filter(p=>p.id!==id);loadProducts();loadAdmin();alert('Deleted');}}
+function buyProduct(id){
+    if(!user){alert(lang==='es'?'Inicia sesión':'Sign in');return;}
+    const p=products.find(x=>x.id===id);
+    const price=(curr==='CRC'?p.price/rate:p.price).toFixed(2);
+    const container=document.getElementById(`paypal-product-${id}`);
+    container.innerHTML='';
+    paypal.Buttons({
+        createOrder:(data,actions)=>actions.order.create({
+            purchase_units:[{
+                amount:{value:price,currency_code:'USD'},
+                description:`${p.name} - Wishay`
+            }]
+        }),
+        onApprove:(data,actions)=>actions.order.capture().then(details=>{
+            sales+=p.price;
+            alert(`${lang==='es'?'¡Compra exitosa!':'Purchase successful!'} ${p.name} - ${details.payer.name.given_name}`);
+            container.innerHTML='';
+        }),
+        onError:err=>{
+            alert(lang==='es'?'Error en el pago':'Payment error');
+            console.error(err);
+            container.innerHTML='';
+        },
+        style:{color:'blue',shape:'rect',height:40,layout:'horizontal'}
+    }).render(`#paypal-product-${id}`);
+}
 
-function buyProduct(id){if(!user){alert(lang==='es'?'Inicia sesión':'Sign in');return;}const p=products.find(x=>x.id===id);const price=(curr==='CRC'?p.price/rate:p.price).toFixed(2);const container=document.getElementById(`paypal-product-${id}`);container.innerHTML='';paypal.Buttons({createOrder:(data,actions)=>actions.order.create({purchase_units:[{amount:{value:price,currency_code:'USD'},description:`${p.name} - Wishay`}]}),onApprove:(data,actions)=>actions.order.capture().then(details=>{sendSingleProductEmail(p, details);sales+=p.price;alert(`${lang==='es'?'¡Compra exitosa!':'Purchase successful!'} ${p.name} - ${details.payer.name.given_name}`);container.innerHTML='';}),onError:err=>{alert(lang==='es'?'Error en el pago':'Payment error');console.error(err);container.innerHTML='';},style:{color:'blue',shape:'rect',height:40,layout:'horizontal'}}).render(`#paypal-product-${id}`);}
+function showDetail(id){
+    const p=products.find(x=>x.id===id);
+    if(!p)return;
+    document.getElementById('mc2').innerHTML=`<div style="text-align:center"><img src="${p.imageUrl}" style="width:100%;max-height:300px;object-fit:contain;border-radius:4px;margin-bottom:1rem"><h2>${p.name}</h2><p>${p.desc}</p><div style="font-size:2rem;font-weight:bold;color:#27ae60;margin:1rem 0">${formatPrice(p.price)}</div><div style="display:flex;gap:1rem;justify-content:center;flex-wrap:wrap">${user?`<button class="btn" onclick="addToCart(${p.id});closeModal()">🛒 ${t[lang].add}</button><button class="btn btn-paypal" onclick="buyProductModal(${p.id})">💳 PayPal</button>`:`<p style="color:#e74c3c">${lang==='es'?'Inicia sesión':'Sign in'}</p>`}</div><div id="paypal-modal-${p.id}" style="margin-top:1rem"></div></div>`;
+    document.getElementById('modal').classList.remove('hidden');
+    document.getElementById('modal').style.display='flex';
+}
 
-function sendSingleProductEmail(product, paymentDetails) {
-const orderId = `ORD-${Date.now()}`;
+function buyProductModal(id){
+    const p=products.find(x=>x.id===id);
+    const price=(curr==='CRC'?p.price/rate:p.price).toFixed(2);
+    const container=document.getElementById(`paypal-modal-${id}`);
+    container.innerHTML='';
+    paypal.Buttons({
+        createOrder:(data,actions)=>actions.order.create({
+            purchase_units:[{
+                amount:{value:price,currency_code:'USD'},
+                description:`${p.name} - Wishay`
+            }]
+        }),
+        onApprove:(data,actions)=>actions.order.capture().then(details=>{
+            sales+=p.price;
+            alert(`${lang==='es'?'¡Compra exitosa!':'Purchase successful!'} ${p.name} - ${details.payer.name.given_name}`);
+            closeModal();
+        }),
+        onError:err=>{
+            alert(lang==='es'?'Error en el pago':'Payment error');
+            console.error(err);
+        },
+        style:{color:'blue',shape:'rect',height:50}
+    }).render(`#paypal-modal-${id}`);
+}
 
-emailjs.send('servicio_ima5kz9', 'template_usj56v8', {
-to_email: user.email,
-to_name: user.name,
-order_id: orderId,
-items: `${product.name} - ${formatPrice(product.price)} x1`,
-total: formatPrice(product.price),
-payer_name: paymentDetails.payer.name.given_name
-}).then(() => {
-console.log('Email de confirmación de producto individual enviado');
-}).catch(error => {
-console.error('Error enviando email de producto individual:', error);
+function closeModal(){
+    document.getElementById('modal').classList.add('hidden');
+    document.getElementById('modal').style.display='none';
+}
+
+// Inicialización
+loadProducts();
+updateTexts();
+updateCurrency();
+updateUserInfo();
+
+document.getElementById('modal').addEventListener('click',e=>{
+    if(e.target===document.getElementById('modal'))closeModal();
 });
-}
-
-function showDetail(id){const p=products.find(x=>x.id===id);if(!p)return;document.getElementById('mc2').innerHTML=`<div style="text-align:center"><img src="${p.imageUrl}" style="width:100%;max-height:300px;object-fit:contain;border-radius:4px;margin-bottom:1rem"><h2>${p.name}</h2><p>${p.desc}</p><div style="font-size:2rem;font-weight:bold;color:#27ae60;margin:1rem 0">${formatPrice(p.price)}</div><div style="display:flex;gap:1rem;justify-content:center;flex-wrap:wrap">${user?`<button class="btn" onclick="addToCart(${p.id});closeModal()">🛒 ${t[lang].add}</button><button class="btn btn-paypal" onclick="buyProductModal(${p.id})">💳 PayPal</button>`:`<p style="color:#e74c3c">${lang==='es'?'Inicia sesión':'Sign in'}</p>`}</div><div id="paypal-modal-${p.id}" style="margin-top:1rem"></div></div>`;document.getElementById('modal').classList.remove('hidden');document.getElementById('modal').style.display='flex';}
-
-function buyProductModal(id){const p=products.find(x=>x.id===id);const price=(curr==='CRC'?p.price/rate:p.price).toFixed(2);const container=document.getElementById(`paypal-modal-${id}`);container.innerHTML='';paypal.Buttons({createOrder:(data,actions)=>actions.order.create({purchase_units:[{amount:{value:price,currency_code:'USD'},description:`${p.name} - Wishay`}]}),onApprove:(data,actions)=>actions.order.capture().then(details=>{sendSingleProductEmail(p, details);sales+=p.price;alert(`${lang==='es'?'¡Compra exitosa!':'Purchase successful!'} ${p.name} - ${details.payer.name.given_name}`);closeModal();}),onError:err=>{alert(lang==='es'?'Error en el pago':'Payment error');console.error(err);},style:{color:'blue',shape:'rect',height:50}}).render(`#paypal-modal-${id}`);}
-
-function closeModal(){document.getElementById('modal').classList.add('hidden');document.getElementById('modal').style.display='none';}
-
-loadProducts();updateTexts();updateCurrency();updateUserInfo();
-
-document.getElementById('modal').addEventListener('click',e=>{if(e.target===document.getElementById('modal'))closeModal();});
 </script>
 </body>
 </html>
