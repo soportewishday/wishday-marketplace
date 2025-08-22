@@ -1,424 +1,74 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="UTF-8">
-<title>Wishay</title>
+<title>MiniTienda</title>
 <style>
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
-
-body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    min-height: 100vh;
-}
-
-.h {
-    background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
-    color: white;
-    padding: 1.5rem 2rem;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.15);
-    backdrop-filter: blur(10px);
-}
-
-.h > div:first-child {
-    font-size: 1.8rem;
-    font-weight: bold;
-    background: linear-gradient(45deg, #fff, #a8edea);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    text-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-
-.nav {
-    display: flex;
-    gap: 1rem;
-    align-items: center;
-}
-
-.nav button, .nav select {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    border: none;
-    padding: 0.8rem 1.2rem;
-    border-radius: 25px;
-    cursor: pointer;
-    font-weight: 500;
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-}
-
-.nav button:hover, .nav select:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 25px rgba(0,0,0,0.3);
-    background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
-}
-
-.c {
-    max-width: 1400px;
-    margin: 0 auto;
-    padding: 2rem;
-}
-
-.hidden {
-    display: none !important;
-}
-
-.fg {
-    margin-bottom: 1.5rem;
-}
-
-.fg label {
-    display: block;
-    margin-bottom: 0.5rem;
-    font-weight: 600;
-    color: #2d3748;
-}
-
-.fg input, .fg select, .fg textarea {
-    width: 100%;
-    padding: 1rem;
-    border: 2px solid #e2e8f0;
-    border-radius: 15px;
-    background: rgba(255,255,255,0.9);
-    backdrop-filter: blur(10px);
-    transition: all 0.3s ease;
-    font-size: 1rem;
-}
-
-.fg input:focus, .fg select:focus, .fg textarea:focus {
-    outline: none;
-    border-color: #667eea;
-    box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
-    transform: translateY(-1px);
-}
-
-.btn {
-    background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
-    color: white;
-    border: none;
-    padding: 1rem 1.5rem;
-    border-radius: 25px;
-    cursor: pointer;
-    margin: 0.5rem 0.5rem 0.5rem 0;
-    font-weight: 600;
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 15px rgba(72, 187, 120, 0.3);
-    text-decoration: none;
-    display: inline-block;
-    text-align: center;
-}
-
-.btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 25px rgba(72, 187, 120, 0.4);
-    background: linear-gradient(135deg, #38a169 0%, #2f855a 100%);
-}
-
-.btn-danger {
-    background: linear-gradient(135deg, #f56565 0%, #e53e3e 100%);
-    box-shadow: 0 4px 15px rgba(245, 101, 101, 0.3);
-}
-
-.btn-danger:hover {
-    background: linear-gradient(135deg, #e53e3e 0%, #c53030 100%);
-    box-shadow: 0 6px 25px rgba(245, 101, 101, 0.4);
-}
-
-.btn-paypal {
-    background: linear-gradient(135deg, #ffc439 0%, #ffb700 100%);
-    color: #003087;
-    box-shadow: 0 4px 15px rgba(255, 196, 57, 0.3);
-}
-
-.btn-paypal:hover {
-    background: linear-gradient(135deg, #ffb700 0%, #ff9500 100%);
-    box-shadow: 0 6px 25px rgba(255, 196, 57, 0.4);
-}
-
-.btn-secondary {
-    background: linear-gradient(135deg, #6b73ff 0%, #9c40ff 100%);
-    box-shadow: 0 4px 15px rgba(107, 115, 255, 0.3);
-}
-
-.btn-secondary:hover {
-    background: linear-gradient(135deg, #9c40ff 0%, #6b73ff 100%);
-    box-shadow: 0 6px 25px rgba(107, 115, 255, 0.4);
-}
-
-.products {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 2rem;
-    margin-top: 2rem;
-}
-
-.product {
-    background: rgba(255,255,255,0.95);
-    backdrop-filter: blur(20px);
-    border-radius: 20px;
-    padding: 1.5rem;
-    box-shadow: 0 8px 32px rgba(0,0,0,0.1);
-    cursor: pointer;
-    transition: all 0.4s ease;
-    border: 1px solid rgba(255,255,255,0.2);
-}
-
-.product:hover {
-    transform: translateY(-8px) scale(1.02);
-    box-shadow: 0 15px 50px rgba(0,0,0,0.2);
-    background: rgba(255,255,255,1);
-}
-
-.price {
-    font-size: 1.5rem;
-    font-weight: bold;
-    background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    margin: 1rem 0;
-}
-
-.pi {
-    width: 100%;
-    height: 220px;
-    object-fit: cover;
-    border-radius: 15px;
-    margin-bottom: 1rem;
-    background: linear-gradient(135deg, #f7fafc 0%, #edf2f7 100%);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #a0aec0;
-    font-size: 1.2rem;
-    transition: all 0.3s ease;
-}
-
-.product:hover .pi {
-    transform: scale(1.05);
-}
-
-.ci {
-    background: rgba(255,255,255,0.95);
-    backdrop-filter: blur(20px);
-    padding: 1.5rem;
-    margin-bottom: 1rem;
-    border-radius: 15px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-    border: 1px solid rgba(255,255,255,0.2);
-}
-
-.ct {
-    background: linear-gradient(135deg, #2d3748 0%, #1a202c 100%);
-    color: white;
-    padding: 2rem;
-    border-radius: 20px;
-    margin-top: 2rem;
-    text-align: right;
-    box-shadow: 0 8px 32px rgba(0,0,0,0.2);
-}
-
-.modal {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0,0,0,0.7);
-    backdrop-filter: blur(5px);
-    z-index: 1000;
-    align-items: center;
-    justify-content: center;
-}
-
-.mc {
-    background: rgba(255,255,255,0.95);
-    backdrop-filter: blur(20px);
-    padding: 3rem;
-    width: 90%;
-    max-width: 700px;
-    border-radius: 25px;
-    position: relative;
-    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-    border: 1px solid rgba(255,255,255,0.2);
-}
-
-.cb {
-    position: absolute;
-    top: 1.5rem;
-    right: 2rem;
-    font-size: 2rem;
-    cursor: pointer;
-    color: #a0aec0;
-    transition: all 0.3s ease;
-}
-
-.cb:hover {
-    color: #e53e3e;
-    transform: scale(1.1);
-}
-
-.alert {
-    padding: 1.5rem;
-    margin-bottom: 1.5rem;
-    border-radius: 15px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-}
-
-.alert-success {
-    background: linear-gradient(135deg, #c6f6d5 0%, #9ae6b4 100%);
-    color: #22543d;
-    border-left: 4px solid #48bb78;
-}
-
-.alert-error {
-    background: linear-gradient(135deg, #fed7d7 0%, #feb2b2 100%);
-    color: #742a2a;
-    border-left: 4px solid #f56565;
-}
-
-.phone-container {
-    display: flex;
-    gap: 0.5rem;
-}
-
-.phone-container select {
-    flex: 0 0 140px;
-}
-
-.phone-container input {
-    flex: 1;
-}
-
-.address-container {
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-    gap: 1rem;
-}
-
-#userInfo {
-    background: rgba(255,255,255,0.9);
-    backdrop-filter: blur(20px);
-    padding: 1rem 1.5rem;
-    border-radius: 15px;
-    margin-bottom: 1rem;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-    border: 1px solid rgba(255,255,255,0.2);
-}
-
-.admin-panel, .profile-panel {
-    background: rgba(255,255,255,0.95);
-    backdrop-filter: blur(20px);
-    padding: 2rem;
-    border-radius: 20px;
-    margin-bottom: 2rem;
-    box-shadow: 0 8px 32px rgba(0,0,0,0.1);
-    border: 1px solid rgba(255,255,255,0.2);
-}
-
-.admin-stats {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    padding: 2rem;
-    border-radius: 20px;
-    box-shadow: 0 8px 32px rgba(0,0,0,0.2);
-}
-
-.profile-info {
-    background: linear-gradient(135deg, #4299e1 0%, #3182ce 100%);
-    color: white;
-    padding: 2rem;
-    border-radius: 20px;
-    box-shadow: 0 8px 32px rgba(0,0,0,0.2);
-    margin-bottom: 2rem;
-}
-
-h2, h3 {
-    margin-bottom: 1.5rem;
-    color: #2d3748;
-    font-weight: 700;
-}
-
-.admin-stats h3, .admin-stats p, .profile-info h3, .profile-info p {
-    color: white;
-}
-
-small {
-    color: #718096;
-    font-size: 0.9rem;
-}
-
-/* Animaciones suaves */
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(20px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-.product, .ci, .admin-panel, .profile-panel {
-    animation: fadeIn 0.6s ease-out;
-}
-
-/* Responsive mejorado */
-@media (max-width: 768px) {
-    .h {
-        padding: 1rem;
-        flex-direction: column;
-        gap: 1rem;
-    }
-    
-    .nav {
-        flex-wrap: wrap;
-        justify-content: center;
-    }
-    
-    .products {
-        grid-template-columns: 1fr;
-        gap: 1.5rem;
-    }
-    
-    .mc {
-        padding: 2rem 1.5rem;
-        width: 95%;
-    }
-    
-    .ci {
-        flex-direction: column;
-        gap: 1rem;
-        text-align: center;
-    }
-    
-    .address-container {
-        grid-template-columns: 1fr;
-        gap: 1rem;
-    }
-}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:Arial;background:#f5f5f5}
+.h{background:#2c3e50;color:white;padding:1rem;display:flex;justify-content:space-between;align-items:center}
+.logo{font-size:1.5rem;font-weight:bold}
+.nav{display:flex;gap:0.5rem}
+.nav button,.nav select{background:#3498db;color:white;border:none;padding:0.5rem;border-radius:4px;cursor:pointer}
+.nav button:hover{background:#2980b9}
+.c{max-width:1200px;margin:0 auto;padding:2rem}
+.hidden{display:none !important}
+.fg{margin-bottom:1rem}
+.fg label{display:block;margin-bottom:0.25rem;font-weight:bold}
+.fg input,.fg textarea{width:100%;padding:0.5rem;border:1px solid #ddd;border-radius:4px}
+.fg select{width:100%;padding:0.5rem;border:1px solid #ddd;border-radius:4px;background:white}
+.password-container{position:relative}
+.password-toggle{position:absolute;right:10px;top:50%;transform:translateY(-50%);cursor:pointer;color:#7f8c8d;font-size:1.2rem;user-select:none}
+.phone-container{display:flex;gap:0.5rem}
+.phone-container select{flex:0 0 120px}
+.phone-container input{flex:1}
+.btn{background:#27ae60;color:white;border:none;padding:0.75rem 1rem;border-radius:4px;cursor:pointer;margin:0.5rem 0.5rem 0.5rem 0}
+.btn:hover{background:#229954}
+.btn-danger{background:#e74c3c}
+.btn-paypal{background:#ffc439;color:#003087;text-decoration:none;display:inline-block;text-align:center}
+.btn-paypal-cart{background:#0070ba;color:white;font-size:1.1rem;padding:1rem 2rem}
+.products{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:1rem;margin-top:2rem}
+.product{background:white;border-radius:8px;padding:1rem;box-shadow:0 2px 4px rgba(0,0,0,0.1);cursor:pointer;transition:transform 0.2s}
+.product:hover{transform:scale(1.02)}
+.product h3{color:#2c3e50;margin-bottom:0.5rem}
+.product p{color:#7f8c8d;margin-bottom:1rem}
+.price{font-size:1.25rem;font-weight:bold;color:#27ae60;margin-bottom:1rem}
+.pb{display:flex;gap:0.5rem;flex-wrap:wrap;margin-top:1rem}
+.pi{width:100%;height:200px;object-fit:cover;border-radius:4px;margin-bottom:1rem;background:#ecf0f1;display:flex;align-items:center;justify-content:center;color:#7f8c8d}
+.ci{background:white;padding:1rem;margin-bottom:0.5rem;border-radius:4px;display:flex;justify-content:space-between;align-items:center}
+.ct{background:#34495e;color:white;padding:1rem;border-radius:4px;margin-top:1rem;text-align:right}
+.ct .payment-options{display:flex;gap:1rem;justify-content:flex-end;align-items:center;margin-top:1rem;flex-wrap:wrap}
+.ap{background:#8e44ad;color:white;padding:2rem;border-radius:8px;margin-top:2rem}
+.af{background:#9b59b6;padding:1rem;border-radius:4px;margin-top:1rem}
+.ui{background:#3498db;color:white;padding:1rem;border-radius:4px;margin-bottom:1rem}
+.alert{padding:1rem;margin-bottom:1rem;border-radius:4px}
+.alert-success{background:#d4edda;color:#155724}
+.alert-error{background:#f8d7da;color:#721c24}
+.modal{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.8);z-index:1000;align-items:center;justify-content:center}
+.mc{background:white;padding:2rem;width:90%;max-width:600px;border-radius:8px;position:relative}
+.cb{position:absolute;top:1rem;right:1.5rem;font-size:2rem;cursor:pointer;color:#7f8c8d}
+.image-upload{position:relative;display:inline-block;width:100%}
+.image-upload input[type=file]{position:absolute;left:-9999px}
+.image-upload label{display:block;padding:0.75rem;background:#3498db;color:white;border-radius:4px;cursor:pointer;text-align:center;transition:background 0.3s}
+.image-upload label:hover{background:#2980b9}
+.image-preview{width:100%;height:200px;border:2px dashed #ddd;border-radius:4px;display:flex;align-items:center;justify-content:center;margin-top:0.5rem;background:#f8f9fa;position:relative;overflow:hidden}
+.image-preview img{width:100%;height:100%;object-fit:cover;border-radius:4px}
+.image-preview .placeholder{color:#7f8c8d;text-align:center}
+.remove-image{position:absolute;top:5px;right:5px;background:#e74c3c;color:white;border:none;border-radius:50%;width:25px;height:25px;cursor:pointer;font-size:12px}
+.cart-limit{color:#e74c3c;font-size:0.9rem;margin-top:0.5rem}
+.paypal-config{background:#f8f9fa;padding:1rem;border-radius:4px;margin-top:1rem;border-left:4px solid #0070ba}
+#paypal-button-container{margin-top:1rem}
+#single-paypal-container{margin-top:1rem}
 </style>
 </head>
 <body>
 <div class="h">
-<div>🛒 <span id="sn">Wishay</span></div>
+<div class="logo">🛒 <span id="sn">MiniTienda</span></div>
 <div class="nav">
-<button onclick="show('tienda')" id="sb">Tienda</button>
-<button onclick="show('carrito')"><span id="cb">Carrito</span> (<span id="cc">0</span>)</button>
-<button id="pb" onclick="show('perfil')" class="hidden">👤 Perfil</button>
-<button id="lb" onclick="show('login')">Login</button>
+<button onclick="showSection('tienda')" id="sb">Tienda</button>
+<button onclick="showSection('carrito')"><span id="cb">Carrito</span> (<span id="cc">0</span>)</button>
+<button id="lb" onclick="showSection('login')">Login</button>
 <button id="ob" onclick="logout()" class="hidden">Logout</button>
-<button id="ab" onclick="show('admin')" class="hidden">Admin</button>
+<button id="ab" onclick="showSection('admin')" class="hidden">Admin</button>
 <select id="ls" onchange="changeLang()">
 <option value="es">🇪🇸</option>
 <option value="en">🇺🇸</option>
@@ -431,8 +81,10 @@ small {
 </div>
 
 <div class="c">
-<div id="alerts"></div>
-<div id="userInfo" class="hidden"><span id="wt"></span></div>
+<div id="alertContainer"></div>
+<div id="userInfo" class="ui hidden">
+<span id="wt"></span>
+</div>
 
 <div id="tienda">
 <h2 id="pt">Productos Disponibles</h2>
@@ -444,141 +96,94 @@ small {
 <div id="ci2"></div>
 <div class="ct">
 <strong><span id="tt">Total</span>: <span id="sy2">$</span><span id="tp">0</span></strong>
-<div><span id="cl">Máximo 15 productos</span> - <span id="current-items">0</span>/15</div>
-<button class="btn" onclick="buyNow()" id="buy-btn">🛒 Comprar Ahora</button>
+<div class="cart-limit">
+<span id="cl">Máximo 15 productos en el carrito</span> - <span id="current-items">0</span>/15
+</div>
+<div class="payment-options">
+<button class="btn btn-paypal-cart" onclick="triggerPayPalCheckout()" id="buy-now-btn">🛒 Comprar Ahora</button>
 <div id="paypal-button-container"></div>
 </div>
-</div>
-
-<div id="perfil" class="hidden">
-<h2 id="profile-title">Mi Perfil</h2>
-
-<div class="profile-info">
-<h3 id="profile-info-title">📋 Información Personal</h3>
-<p><strong>Nombre:</strong> <span id="profile-display-name">-</span></p>
-<p><strong>Email:</strong> <span id="profile-display-email">-</span></p>
-<p><strong>Teléfono:</strong> <span id="profile-display-phone">-</span></p>
-<p><strong>Dirección:</strong> <span id="profile-display-address">-</span></p>
-</div>
-
-<div class="profile-panel">
-<h3 id="billing-title">🏠 Información de Facturación</h3>
-<div class="fg">
-<label id="billing-name-label">Nombre Completo:</label>
-<input type="text" id="billing-name" placeholder="Nombre y apellidos completos">
-</div>
-
-<div class="fg">
-<label id="billing-email-label">Email de Facturación:</label>
-<input type="email" id="billing-email" placeholder="email@ejemplo.com">
-</div>
-
-<div class="fg">
-<label id="billing-phone-label">Teléfono:</label>
-<div class="phone-container">
-<select id="billing-country-code">
-<option value="+506" selected>🇨🇷 +506</option>
-<option value="+507">🇵🇦 +507</option>
-<option value="+505">🇳🇮 +505</option>
-</select>
-<input type="tel" id="billing-phone" placeholder="8888-8888">
-</div>
-</div>
-
-<div class="fg">
-<label id="billing-address-label">Dirección (Provincia, Cantón, Distrito):</label>
-<div class="address-container">
-<select id="billing-province">
-<option value="">Seleccionar Provincia</option>
-<option value="San José">San José</option>
-<option value="Alajuela">Alajuela</option>
-<option value="Cartago">Cartago</option>
-<option value="Heredia">Heredia</option>
-<option value="Guanacaste">Guanacaste</option>
-<option value="Puntarenas">Puntarenas</option>
-<option value="Limón">Limón</option>
-</select>
-<input type="text" id="billing-canton" placeholder="Cantón">
-<input type="text" id="billing-district" placeholder="Distrito">
-</div>
-</div>
-
-<div class="fg">
-<label id="billing-exact-address-label">Dirección Exacta:</label>
-<textarea id="billing-exact-address" rows="3" placeholder="Dirección exacta, referencias, número de casa, etc."></textarea>
-</div>
-
-<div class="fg">
-<label id="billing-postal-code-label">Código Postal:</label>
-<input type="text" id="billing-postal-code" placeholder="10101">
-</div>
-
-<div class="fg">
-<label id="billing-cedula-label">Cédula/ID:</label>
-<input type="text" id="billing-cedula" placeholder="1-1111-1111">
-</div>
-
-<div class="fg">
-<label id="billing-description-label">Descripción/Notas:</label>
-<textarea id="billing-description" rows="3" placeholder="Información adicional, preferencias de entrega, etc."></textarea>
-</div>
-
-<button type="button" class="btn" onclick="saveProfile()" id="save-profile-btn">💾 Guardar Información</button>
-<button type="button" class="btn btn-secondary" onclick="clearProfile()" id="clear-profile-btn">🗑️ Limpiar</button>
 </div>
 </div>
 
 <div id="login" class="hidden">
-<div class="admin-panel">
 <h2 id="lt">Login</h2>
 <div class="fg">
 <label>Email:</label>
 <input type="email" id="le" placeholder="email@email.com">
 </div>
 <div class="fg">
-<label id="pl">Contraseña:</label>
+<label id="pl">Password:</label>
+<div class="password-container">
 <input type="password" id="lp">
+<span class="password-toggle" onclick="togglePassword('lp', this)">👁️</span>
+</div>
 </div>
 <button class="btn" onclick="login()" id="lab">Login</button>
-<button class="btn" onclick="show('registro')" id="cb3">Crear</button>
-</div>
+<button class="btn" onclick="showSection('registro')" id="cb3">Crear</button>
 </div>
 
 <div id="registro" class="hidden">
-<div class="admin-panel">
 <h2 id="rt">Registro</h2>
 <div class="fg">
-<label id="nl">Nombre Completo:</label>
-<input type="text" id="rn" placeholder="Juan Pérez González">
+<label id="nl">Nombre:</label>
+<input type="text" id="rn">
 </div>
 <div class="fg">
 <label>Email:</label>
-<input type="email" id="re" placeholder="ejemplo@gmail.com">
-<small style="color:#718096;font-size:0.9rem;">Solo Gmail, Hotmail, Outlook, Yahoo y Apple Mail</small>
+<input type="email" id="re">
 </div>
 <div class="fg">
 <label id="phone-label">Teléfono:</label>
 <div class="phone-container">
 <select id="country-code">
 <option value="+506" selected>🇨🇷 +506</option>
+<option value="+34">🇪🇸 +34</option>
 <option value="+507">🇵🇦 +507</option>
 <option value="+505">🇳🇮 +505</option>
 </select>
-<input type="tel" id="rph" placeholder="8888-8888">
+<input type="tel" id="rph" placeholder="8888-8888" required>
 </div>
 </div>
 <div class="fg">
-<label id="pl2">Contraseña:</label>
-<input type="password" id="rp" placeholder="Mínimo 6 caracteres">
+<label id="cedula-label">Cédula/ID:</label>
+<input type="text" id="cedula" placeholder="1-1234-5678" required>
 </div>
-<button class="btn" onclick="register()" id="rb">Crear Cuenta</button>
+<div class="fg">
+<label id="address-label">Dirección de Envío:</label>
+<textarea id="address" placeholder="Dirección completa para envíos..." rows="3" required></textarea>
 </div>
+<div class="fg">
+<label id="pl2">Password:</label>
+<div class="password-container">
+<input type="password" id="rp" required>
+<span class="password-toggle" onclick="togglePassword('rp', this)">👁️</span>
+</div>
+</div>
+<button class="btn" onclick="register()" id="rb">Crear</button>
 </div>
 
-<div id="admin" class="hidden">
-<h2>Admin Panel</h2>
-<div class="admin-panel">
-<h3>Agregar Producto</h3>
+<div id="admin" class="hidden ap">
+<h2 id="at">Admin Panel</h2>
+
+<div class="af paypal-config">
+<h3>🪙 Configuración PayPal</h3>
+<div class="fg">
+<label>Client ID:</label>
+<input type="text" id="paypal-client-id" placeholder="Tu PayPal Client ID" value="ARiqSNQ-c7ORV5f5P8FPcDzQrwiazstmxY6-n2AB4y7IndGYwQU5KjUNnE7McQhmwGwoUTCF250i_YUn">
+</div>
+<div class="fg">
+<label>Modo:</label>
+<select id="paypal-mode">
+<option value="live">Live (Producción)</option>
+<option value="sandbox">Sandbox (Pruebas)</option>
+</select>
+</div>
+<button class="btn" onclick="savePayPalConfig()">💾 Guardar Configuración</button>
+</div>
+
+<div class="af">
+<h3 id="apt">Agregar Producto</h3>
 <div class="fg">
 <label>Nombre:</label>
 <input type="text" id="apn">
@@ -592,16 +197,31 @@ small {
 <input type="number" id="app">
 </div>
 <div class="fg">
-<label>Imagen URL:</label>
-<input type="url" id="api">
+<label>Imagen del Producto:</label>
+<div class="image-upload">
+<input type="file" id="product-image" accept="image/*" onchange="previewImage(this, 'image-preview')">
+<label for="product-image">📷 Seleccionar Imagen</label>
+</div>
+<div class="image-preview" id="image-preview">
+<div class="placeholder">📦 Vista previa de la imagen</div>
+</div>
+</div>
+<div class="fg">
+<label>Imagen URL (opcional):</label>
+<input type="url" id="api" placeholder="https://ejemplo.com/imagen.jpg">
+</div>
+<div class="fg">
+<label>PayPal Individual (opcional):</label>
+<input type="url" id="apy" placeholder="https://paypal.me/usuario/precio">
 </div>
 <button class="btn" onclick="addProduct()" id="apb">Agregar</button>
 </div>
-<div class="admin-stats">
+<div class="af">
 <h3>📊 Estadísticas</h3>
 <p>Productos: <span id="tps">0</span></p>
 <p>Usuarios: <span id="tus">0</span></p>
 <p>Ventas: <span id="sy3">$</span><span id="ts">0</span></p>
+<p>PayPal: <span id="paypal-status">✅ Configurado</span></p>
 </div>
 </div>
 
@@ -613,551 +233,591 @@ small {
 </div>
 </div>
 
+<!-- PayPal SDK -->
 <script src="https://www.paypal.com/sdk/js?client-id=ARiqSNQ-c7ORV5f5P8FPcDzQrwiazstmxY6-n2AB4y7IndGYwQU5KjUNnE7McQhmwGwoUTCF250i_YUn&currency=USD"></script>
 
 <script>
-let lang='es',curr='USD',rate=510,user=null,cart=[],sales=0;
-let users=[{id:1,name:"Admin",email:"faviar@tienda.com",password:"FaAsh211121",role:"admin",phone:"+506-8888-8888",cedula:"Admin",address:"Admin"}];
+let lang='es',curr='USD',rate=510;
+let users=[{id:1,name:"Admin",email:"admin@tienda.com",password:"admin123",role:"admin",phone:"+506-8888-8888",cedula:"Admin",address:"Admin Address"}];
 let products=[
-{id:1,name:"Laptop",desc:"Gaming laptop",price:899.99,imageUrl:"https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=400&h=300&fit=crop"},
-{id:2,name:"Mouse",desc:"RGB mouse",price:49.99,imageUrl:"https://images.unsplash.com/photo-1527864550417-7fd91fc51a46?w=400&h=300&fit=crop"},
-{id:3,name:"Keyboard",desc:"Mechanical",price:79.99,imageUrl:"https://images.unsplash.com/photo-1541140532154-b024d705b90a?w=400&h=300&fit=crop"},
-{id:4,name:"Monitor",desc:"4K 27 inch",price:329.99,imageUrl:"https://images.unsplash.com/photo-1527443224154-c4a3942d3acf?w=400&h=300&fit=crop"}
+{id:1,name:"Laptop",desc:"Gaming laptop",price:899.99,paypalUrl:"https://paypal.me/shop/899",imageUrl:"https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=400&h=300&fit=crop"},
+{id:2,name:"Mouse",desc:"RGB mouse",price:49.99,paypalUrl:"",imageUrl:"https://images.unsplash.com/photo-1527864550417-7fd91fc51a46?w=400&h=300&fit=crop"},
+{id:3,name:"Keyboard",desc:"Mechanical",price:79.99,paypalUrl:"",imageUrl:"https://images.unsplash.com/photo-1541140532154-b024d705b90a?w=400&h=300&fit=crop"},
+{id:4,name:"Monitor",desc:"4K 27 inch",price:329.99,paypalUrl:"https://paypal.me/shop/329",imageUrl:"https://images.unsplash.com/photo-1527443224154-c4a3942d3acf?w=400&h=300&fit=crop"}
 ];
+let cart=[],user=null,sales=0;
+let paypalConfig = {clientId: 'ARiqSNQ-c7ORV5f5P8FPcDzQrwiazstmxY6-n2AB4y7IndGYwQU5KjUNnE7McQhmwGwoUTCF250i_YUn', mode: 'live'};
 
 const t={
-es:{
-sn:'Wishay',sb:'Tienda',cb:'Carrito',pb:'👤 Perfil',lb:'Login',ob:'Logout',pt:'Productos',ct2:'Carrito',tt:'Total',lt:'Login',pl:'Contraseña',lab:'Login',cb3:'Crear Cuenta',rt:'Registro',nl:'Nombre Completo',rb:'Crear Cuenta',add:'Agregar',buy:'PayPal',edit:'Editar',del:'Eliminar',welcome:'Hola',noimg:'Sin imagen',cl:'Máximo 15 productos','phone-label':'Teléfono','cedula-label':'Cédula/ID','address-label':'Dirección',
-'profile-title':'Mi Perfil','profile-info-title':'📋 Información Personal','billing-title':'🏠 Información de Facturación','billing-name-label':'Nombre Completo:','billing-email-label':'Email de Facturación:','billing-phone-label':'Teléfono:','billing-address-label':'Dirección (Provincia, Cantón, Distrito):','billing-exact-address-label':'Dirección Exacta:','billing-postal-code-label':'Código Postal:','billing-cedula-label':'Cédula/ID:','billing-description-label':'Descripción/Notas:','save-profile-btn':'💾 Guardar Información','clear-profile-btn':'🗑️ Limpiar'
-},
-en:{
-sn:'Wishay',sb:'Shop',cb:'Cart',pb:'👤 Profile',lb:'Login',ob:'Logout',pt:'Products',ct2:'Cart',tt:'Total',lt:'Sign In',pl:'Password',lab:'Sign In',cb3:'Create Account',rt:'Register',nl:'Full Name',rb:'Create Account',add:'Add',buy:'PayPal',edit:'Edit',del:'Delete',welcome:'Hello',noimg:'No image',cl:'Maximum 15 products','phone-label':'Phone','cedula-label':'ID Number','address-label':'Address',
-'profile-title':'My Profile','profile-info-title':'📋 Personal Information','billing-title':'🏠 Billing Information','billing-name-label':'Full Name:','billing-email-label':'Billing Email:','billing-phone-label':'Phone:','billing-address-label':'Address (Province, Canton, District):','billing-exact-address-label':'Exact Address:','billing-postal-code-label':'Postal Code:','billing-cedula-label':'ID Number:','billing-description-label':'Description/Notes:','save-profile-btn':'💾 Save Information','clear-profile-btn':'🗑️ Clear'
-}
+es:{sn:'MiniTienda',sb:'Tienda',cb:'Carrito',lb:'Login',ob:'Logout',pt:'Productos',ct2:'Carrito',tt:'Total',lt:'Login',pl:'Contraseña',lab:'Login',cb3:'Crear',rt:'Registro',nl:'Nombre',rb:'Crear',at:'Admin',apt:'Agregar',apb:'Agregar',add:'Agregar',buy:'PayPal',edit:'Editar',del:'Eliminar',welcome:'Hola',noimg:'Sin imagen',cl:'Máximo 15 productos en el carrito',cartLimit:'No puedes agregar más de 15 productos',itemsInCart:'productos en carrito',buyNow:'🛒 Comprar Ahora','phone-label':'Teléfono','cedula-label':'Cédula/ID','address-label':'Dirección de Envío',buyDirect:'Comprar',directPayment:'O pagar directamente con PayPal:',buyWithCard:'Comprar con PayPal o Tarjeta'},
+en:{sn:'MiniStore',sb:'Shop',cb:'Cart',lb:'Login',ob:'Logout',pt:'Products',ct2:'Cart',tt:'Total',lt:'Sign In',pl:'Password',lab:'Sign In',cb3:'Create',rt:'Register',nl:'Name',rb:'Create',at:'Admin',apt:'Add Product',apb:'Add',add:'Add',buy:'PayPal',edit:'Edit',del:'Delete',welcome:'Hello',noimg:'No image',cl:'Maximum 15 products in cart',cartLimit:'Cannot add more than 15 products',itemsInCart:'items in cart',buyNow:'🛒 Buy Now','phone-label':'Phone','cedula-label':'ID Number','address-label':'Shipping Address',buyDirect:'Buy',directPayment:'Or pay directly with PayPal:',buyWithCard:'Buy with PayPal or Card'}
 };
 
-// ⚠️ CAMBIAR POR TU EMAIL REAL
-const ADMIN_EMAIL = 'soporte.wishay@gmail.com
-';
-
-// FUNCIÓN PARA ENVIAR DATOS CON FORMSUBMIT DESPUÉS DEL PAGO
-async function sendOrderAndBillingInfo(paymentDetails, total, items) {
-    if (!user || !user.billingInfo) {
-        console.log('No hay datos de facturación para enviar');
-        return;
-    }
-
-    // Crear un formulario virtual para FormSubmit
-    const form = document.createElement('form');
-    form.method = 'POST';
-    form.action = `https://formsubmit.co/${ADMIN_EMAIL}`;
-    form.style.display = 'none';
-
-    // Configuraciones de FormSubmit
-    const configs = {
-        '_subject': '🛒 Nueva Compra Realizada - Wishay',
-        '_captcha': 'false',
-        '_template': 'table',
-        '_next': 'https://google.com'
-    };
-
-    // Datos del pago PayPal
-    const paymentData = {
-        'Payment_ID': paymentDetails.id,
-        'Nombre_Comprador_PayPal': paymentDetails.payer.name.given_name + ' ' + (paymentDetails.payer.name.surname || ''),
-        'Email_PayPal': paymentDetails.payer.email_address,
-        'Total_Pagado': formatPrice(total),
-        'Productos_Comprados': items,
-        'Fecha_Pago': new Date().toLocaleString(),
-        'Moneda': curr
-    };
-
-    // Datos del usuario logueado
-    const userData = {
-        'Usuario_Logueado': user.name,
-        'Email_Usuario': user.email,
-        'Telefono_Usuario': user.phone || 'No proporcionado'
-    };
-
-    // Datos de facturación
-    const billing = user.billingInfo;
-    const billingData = {
-        'Nombre_Facturacion': billing.billingName || 'No proporcionado',
-        'Email_Facturacion': billing.billingEmail || 'No proporcionado',
-        'Telefono_Facturacion': (billing.countryCode || '') + '-' + (billing.billingPhone || ''),
-        'Provincia': billing.province || 'No proporcionado',
-        'Canton': billing.canton || 'No proporcionado',
-        'Distrito': billing.district || 'No proporcionado',
-        'Direccion_Exacta': billing.exactAddress || 'No proporcionado',
-        'Codigo_Postal': billing.postalCode || 'No proporcionado',
-        'Cedula_ID': billing.cedula || 'No proporcionado',
-        'Notas_Adicionales': billing.description || 'Ninguna'
-    };
-
-    // Combinar todos los datos
-    const allData = { ...configs, ...paymentData, ...userData, ...billingData };
-
-    // Crear inputs hidden para cada dato
-    Object.entries(allData).forEach(([key, value]) => {
-        const input = document.createElement('input');
-        input.type = 'hidden';
-        input.name = key;
-        input.value = value;
-        form.appendChild(input);
-    });
-
-    // Agregar el formulario al DOM y enviarlo
-    document.body.appendChild(form);
-    
-    try {
-        // Enviar el formulario en una nueva ventana
-        form.target = '_blank';
-        form.submit();
-        console.log('✅ Datos de compra enviados por email con FormSubmit');
-        
-        // Remover el formulario después de un momento
-        setTimeout(() => {
-            if (document.body.contains(form)) {
-                document.body.removeChild(form);
-            }
-        }, 1000);
-        
-    } catch (error) {
-        console.error('❌ Error enviando datos:', error);
-        if (document.body.contains(form)) {
-            document.body.removeChild(form);
-        }
-    }
+function changeLang(){
+lang=document.getElementById('ls').value;
+updateTexts();
+document.getElementById('buy-now-btn').textContent = t[lang].buyNow;
+loadProducts();
+updateCart();
 }
 
-function show(s){
-['tienda','carrito','login','registro','admin','perfil'].forEach(x=>document.getElementById(x).classList.add('hidden'));
+function changeCurr(){
+curr=document.getElementById('cs').value;
+updateCurrency();
+loadProducts();
+updateCart();
+updateUserInfo();
+}
+
+function updateTexts(){
+Object.keys(t[lang]).forEach(k=>{
+const el=document.getElementById(k);
+if(el)el.textContent=t[lang][k];
+});
+document.getElementById('pl2').textContent=t[lang].pl;
+}
+
+function updateCurrency(){
+const s=curr==='USD'?'$':'₡';
+['sy','sy2','sy3'].forEach(id=>{
+const el=document.getElementById(id);
+if(el)el.textContent=s;
+});
+}
+
+function formatPrice(p){
+const c=curr==='CRC'?Math.round(p*rate).toLocaleString():p.toFixed(2);
+return `${curr==='USD'?'$':'₡'}${c}`;
+}
+
+function showSection(s){
+['tienda','carrito','login','registro','admin'].forEach(x=>document.getElementById(x).classList.add('hidden'));
 document.getElementById(s).classList.remove('hidden');
 if(s==='tienda')loadProducts();
-if(s==='carrito')updateCart();
+if(s==='carrito'){updateCart();renderPayPalButton();}
 if(s==='admin'&&user?.role==='admin')loadAdmin();
-if(s==='perfil'&&user)loadProfile();
 }
 
-function changeLang(){lang=document.getElementById('ls').value;updateTexts();loadProducts();updateCart();}
-
-function changeCurr(){curr=document.getElementById('cs').value;updateCurrency();loadProducts();updateCart();}
-
-function updateTexts(){Object.keys(t[lang]).forEach(k=>{const el=document.getElementById(k);if(el)el.textContent=t[lang][k];});document.getElementById('pl2').textContent=t[lang].pl;}
-
-function updateCurrency(){const s=curr==='USD'?'$':'₡';['sy','sy2','sy3'].forEach(id=>{const el=document.getElementById(id);if(el)el.textContent=s;});}
-
-function formatPrice(p){const c=curr==='CRC'?Math.round(p*rate).toLocaleString():p.toFixed(2);return `${curr==='USD'?'$':'₡'}${c}`;}
-
-function loadProducts(){document.getElementById('pg').innerHTML=products.map(p=>`<div class="product" onclick="showDetail(${p.id})"><img src="${p.imageUrl}" class="pi" onerror="this.outerHTML='<div class=pi>📦 ${t[lang].noimg}</div>';"><h3>${p.name}</h3><p>${p.desc}</p><div class="price">${formatPrice(p.price)}</div><div onclick="event.stopPropagation()"><button class="btn" onclick="addToCart(${p.id})">🛒 ${t[lang].add}</button><button class="btn btn-paypal" onclick="buyProduct(${p.id})">💳 PayPal</button></div><div id="paypal-product-${p.id}"></div>${user?.role==='admin'?`<div onclick="event.stopPropagation()"><button class="btn" onclick="editProduct(${p.id})" style="background:linear-gradient(135deg, #f39c12 0%, #e67e22 100%)">✏️</button><button class="btn btn-danger" onclick="deleteProduct(${p.id})">🗑️</button></div>`:''}}</div>`).join('');}
+function loadProducts(){
+const g=document.getElementById('pg');
+g.innerHTML=products.map(p=>`
+<div class="product" onclick="showDetail(${p.id})">
+${p.imageUrl?`<img src="${p.imageUrl}" class="pi" onerror="this.style.display='none';">`:`<div class="pi">📦 ${t[lang].noimg}</div>`}
+<h3>${p.name}</h3>
+<p>${p.desc}</p>
+<div class="price">${formatPrice(p.price)}</div>
+<div class="pb" onclick="event.stopPropagation()">
+<button class="btn" onclick="addToCart(${p.id})">🛒 ${t[lang].add}</button>
+${user?`<button class="btn btn-paypal-cart" onclick="showDetail(${p.id})" style="background:#0070ba;padding:0.5rem 0.8rem;font-size:0.85rem;">💳 ${t[lang].buyWithCard}</button>`:''}
+${p.paypalUrl?`<a href="${p.paypalUrl}" class="btn btn-paypal" target="_blank" style="font-size:0.75rem;padding:0.4rem 0.6rem;">PayPal.me</a>`:''}
+</div>
+${user?.role==='admin'?`<div onclick="event.stopPropagation()">
+<button class="btn" onclick="editProduct(${p.id})" style="background:#f39c12;font-size:0.8rem">✏️ ${t[lang].edit}</button>
+<button class="btn btn-danger" onclick="deleteProduct(${p.id})" style="font-size:0.8rem">🗑️ ${t[lang].del}</button>
+</div>`:''}
+</div>
+`).join('');
+}
 
 function addToCart(id){
-    if(!user){alert(lang==='es'?'Inicia sesión':'Sign in');return;}
-    const totalItems=cart.reduce((s,i)=>s+i.quantity,0);
-    if(totalItems>=15){alert(t[lang].cl);return;}
-    const p=products.find(x=>x.id===id);
-    const e=cart.find(x=>x.id===id);
-    if(e)e.quantity+=1;
-    else cart.push({...p,quantity:1});
-    updateCartCount();
-    alert(`${p.name} ${lang==='es'?'agregado':'added'}`);
+if(!user){
+showAlert(lang==='es'?'Inicia sesión':'Sign in','error');
+return;
+}
+const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+if(totalItems >= 15){
+showAlert(t[lang].cartLimit,'error');
+return;
+}
+const p=products.find(x=>x.id===id);
+const e=cart.find(x=>x.id===id);
+if(e)e.quantity+=1;
+else cart.push({...p,quantity:1});
+updateCartCount();
+showAlert(`${p.name} ${lang==='es'?'agregado':'added'}`,'success');
 }
 
 function updateCart(){
-    const c=document.getElementById('ci2');
-    const total=cart.reduce((s,i)=>s+(i.price*i.quantity),0);
-    const totalItems=cart.reduce((s,i)=>s+i.quantity,0);
-    c.innerHTML=cart.map(i=>`<div class="ci"><div><strong>${i.name}</strong> - ${formatPrice(i.price)} x ${i.quantity}</div><div><button class="btn" onclick="changeQty(${i.id},-1)">-</button><button class="btn" onclick="changeQty(${i.id},1)">+</button><button class="btn btn-danger" onclick="removeFromCart(${i.id})">${t[lang].del}</button></div></div>`).join('');
-    document.getElementById('tp').textContent=curr==='CRC'?Math.round(total*rate).toLocaleString():total.toFixed(2);
-    document.getElementById('current-items').textContent=totalItems;
+const c=document.getElementById('ci2');
+const total=cart.reduce((s,i)=>s+(i.price*i.quantity),0);
+const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+c.innerHTML=cart.map(i=>`
+<div class="ci">
+<div><strong>${i.name}</strong> - ${formatPrice(i.price)} x ${i.quantity}</div>
+<div>
+<button class="btn" onclick="changeQty(${i.id},-1)">-</button>
+<button class="btn" onclick="changeQty(${i.id},1)">+</button>
+<button class="btn btn-danger" onclick="removeFromCart(${i.id})">${t[lang].del}</button>
+</div>
+</div>
+`).join('');
+document.getElementById('tp').textContent=curr==='CRC'?Math.round(total*rate).toLocaleString():total.toFixed(2);
+document.getElementById('current-items').textContent=totalItems;
 }
 
 function changeQty(id,ch){
-    const totalItems=cart.reduce((s,i)=>s+i.quantity,0);
-    if(ch>0&&totalItems>=15){alert(t[lang].cl);return;}
-    const i=cart.find(c=>c.id===id);
-    if(i){i.quantity+=ch;if(i.quantity<=0)cart=cart.filter(c=>c.id!==id);updateCart();updateCartCount();}
+const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+if(ch > 0 && totalItems >= 15){
+showAlert(t[lang].cartLimit,'error');
+return;
+}
+const i=cart.find(c=>c.id===id);
+if(i){
+i.quantity+=ch;
+if(i.quantity<=0)cart=cart.filter(c=>c.id!==id);
+updateCart();
+updateCartCount();
+renderPayPalButton();
+}
 }
 
 function removeFromCart(id){
-    cart=cart.filter(c=>c.id!==id);
-    updateCart();
-    updateCartCount();
+cart=cart.filter(c=>c.id!==id);
+updateCart();
+updateCartCount();
+renderPayPalButton();
 }
 
 function updateCartCount(){
-    document.getElementById('cc').textContent=cart.reduce((s,i)=>s+i.quantity,0);
+document.getElementById('cc').textContent=cart.reduce((s,i)=>s+i.quantity,0);
 }
 
-// FUNCIÓN BUYBOX MODIFICADA PARA FORMSUBMIT
-function buyNow(){
-    if(cart.length===0){alert(lang==='es'?'Carrito vacío':'Cart empty');return;}
-    const total=cart.reduce((s,i)=>s+(i.price*i.quantity),0);
-    const paypalTotal=(curr==='CRC'?total/rate:total).toFixed(2);
-    
-    // Crear lista de productos para el email
-    const itemsList = cart.map(i => `${i.name} - ${formatPrice(i.price)} x${i.quantity}`).join(', ');
-    
-    document.getElementById('paypal-button-container').innerHTML='';
-    paypal.Buttons({
-        createOrder:(data,actions)=>actions.order.create({
-            purchase_units:[{
-                amount:{value:paypalTotal,currency_code:'USD'},
-                description:`${cart.length} items - Wishay`
-            }]
-        }),
-        onApprove:(data,actions)=>actions.order.capture().then(details=>{
-            // AQUÍ SE ENVÍAN LOS DATOS AUTOMÁTICAMENTE CON FORMSUBMIT
-            sendOrderAndBillingInfo(details, total, itemsList);
-            
-            sales+=total;
-            cart=[];
-            updateCart();
-            updateCartCount();
-            alert(`${lang==='es'?'¡Pago exitoso!':'Payment successful!'} - ${details.payer.name.given_name}`);
-        }),
-        onError:err=>{
-            alert(lang==='es'?'Error en el pago':'Payment error');
-            console.error(err);
-        },
-        style:{color:'blue',shape:'rect',height:50}
-    }).render('#paypal-button-container');
+function triggerPayPalCheckout(){
+if(cart.length === 0){
+showAlert(lang==='es'?'Carrito vacío':'Cart empty','error');
+return;
+}
+document.getElementById('buy-now-btn').style.display = 'none';
+document.getElementById('paypal-button-container').style.display = 'block';
+renderPayPalButton();
+}
+
+function renderPayPalButton(){
+const container = document.getElementById('paypal-button-container');
+if(!container) return;
+container.innerHTML = '';
+if(cart.length === 0) {
+document.getElementById('buy-now-btn').style.display = 'block';
+container.style.display = 'none';
+return;
+}
+
+const total = cart.reduce((s,i)=>s+(i.price*i.quantity),0);
+const paypalTotal = curr === 'CRC' ? (total / rate).toFixed(2) : total.toFixed(2);
+
+if(window.paypal){
+paypal.Buttons({
+createOrder: function(data, actions) {
+return actions.order.create({
+purchase_units: [{
+amount: {
+value: paypalTotal,
+currency_code: 'USD'
+},
+description: `${cart.length} ${t[lang].itemsInCart} - MiniTienda`
+}]
+});
+},
+onApprove: function(data, actions) {
+return actions.order.capture().then(function(details) {
+sales += total;
+cart = [];
+updateCart();
+updateCartCount();
+document.getElementById('buy-now-btn').style.display = 'block';
+document.getElementById('paypal-button-container').style.display = 'none';
+showAlert(`${lang==='es'?'¡Pago PayPal exitoso!':'PayPal payment successful!'} - ${details.payer.name.given_name}`, 'success');
+if(user?.role==='admin') loadAdmin();
+});
+},
+onCancel: function(data) {
+document.getElementById('buy-now-btn').style.display = 'block';
+document.getElementById('paypal-button-container').style.display = 'none';
+showAlert(lang==='es'?'Pago cancelado':'Payment cancelled','error');
+},
+onError: function(err) {
+document.getElementById('buy-now-btn').style.display = 'block';
+document.getElementById('paypal-button-container').style.display = 'none';
+showAlert(lang==='es'?'Error en el pago':'Payment error','error');
+console.error('PayPal error:', err);
+},
+style: {
+color: 'blue',
+shape: 'rect',
+label: 'paypal',
+height: 50,
+layout: 'vertical'
+}
+}).render('#paypal-button-container');
+} else {
+showAlert('PayPal no disponible','error');
+}
+}
+
+function buyNowSingle(productId) {
+const p = products.find(x => x.id === productId);
+if (!p || !user) return;
+
+const container = document.getElementById('single-paypal-container');
+container.innerHTML = '';
+
+const paypalTotal = curr === 'CRC' ? (p.price / rate).toFixed(2) : p.price.toFixed(2);
+
+if(window.paypal){
+paypal.Buttons({
+createOrder: function(data, actions) {
+return actions.order.create({
+purchase_units: [{
+amount: {
+value: paypalTotal,
+currency_code: 'USD'
+},
+description: `${p.name} - MiniTienda`
+}]
+});
+},
+onApprove: function(data, actions) {
+return actions.order.capture().then(function(details) {
+sales += p.price;
+closeModal();
+showAlert(`${lang==='es'?'¡Compra exitosa!':'Purchase successful!'} - ${p.name}`, 'success');
+if(user?.role==='admin') loadAdmin();
+});
+},
+onCancel: function(data) {
+showAlert(lang==='es'?'Pago cancelado':'Payment cancelled','error');
+},
+onError: function(err) {
+showAlert(lang==='es'?'Error en el pago':'Payment error','error');
+console.error('PayPal error:', err);
+},
+style: {
+color: 'blue',
+shape: 'rect',
+label: 'paypal',
+height: 40,
+layout: 'horizontal'
+}
+}).render('#single-paypal-container');
+} else {
+showAlert('PayPal no disponible','error');
+}
+}
+
+function savePayPalConfig(){
+const clientId = document.getElementById('paypal-client-id').value;
+const mode = document.getElementById('paypal-mode').value;
+if(!clientId){
+showAlert('Client ID requerido','error');
+return;
+}
+paypalConfig = {clientId, mode};
+document.getElementById('paypal-status').innerHTML = `✅ Configurado (${mode})`;
+showAlert(`Configuración PayPal guardada - Modo: ${mode}. Recarga la página para aplicar cambios.`,'success');
 }
 
 function login(){
-    const email=document.getElementById('le').value;
-    const pass=document.getElementById('lp').value;
-    const u=users.find(x=>x.email===email&&x.password===pass);
-    if(u){
-        user=u;
-        updateUserInfo();
-        show('tienda');
-        alert(`${t[lang].welcome}, ${u.name}!`);
-    }else{
-        alert(lang==='es'?'Credenciales incorrectas':'Wrong credentials');
-    }
+const email=document.getElementById('le').value;
+const pass=document.getElementById('lp').value;
+const u=users.find(x=>x.email===email&&x.password===pass);
+if(u){
+user=u;
+updateUserInfo();
+showSection('tienda');
+showAlert(`${t[lang].welcome}, ${u.name}!`,'success');
+}else{
+showAlert(lang==='es'?'Credenciales incorrectas':'Wrong credentials','error');
+}
+}
+
+function togglePassword(inputId, toggleIcon) {
+const input = document.getElementById(inputId);
+if (input.type === 'password') {
+input.type = 'text';
+toggleIcon.textContent = '🙈';
+} else {
+input.type = 'password';
+toggleIcon.textContent = '👁️';
+}
 }
 
 function register(){
-    const name=document.getElementById('rn').value.trim();
-    const email=document.getElementById('re').value.trim().toLowerCase();
-    const pass=document.getElementById('rp').value;
-    const countryCode=document.getElementById('country-code').value;
-    const phone=document.getElementById('rph').value.trim();
+const name=document.getElementById('rn').value.trim();
+const email=document.getElementById('re').value.trim();
+const pass=document.getElementById('rp').value;
+const countryCode=document.getElementById('country-code').value;
+const phone=document.getElementById('rph').value.trim();
+const cedula=document.getElementById('cedula').value.trim();
+const address=document.getElementById('address').value.trim();
 
-    if(!name||!email||!pass||!phone){
-        alert(lang==='es'?'Todos los campos son requeridos':'All fields are required');
-        return;
-    }
+if(!name||!email||!pass||!phone||!cedula||!address){
+showAlert(lang==='es'?'Todos los campos son requeridos':'All fields are required','error');
+return;
+}
 
-    if(name.split(' ').length < 2){
-        alert(lang==='es'?'Ingresa tu nombre completo (nombre y apellido)':'Enter your full name (first and last name)');
-        return;
-    }
+if(users.find(u=>u.email===email)){
+showAlert(lang==='es'?'Email ya existe':'Email already exists','error');
+return;
+}
 
-    if(pass.length < 6){
-        alert(lang==='es'?'La contraseña debe tener al menos 6 caracteres':'Password must be at least 6 characters');
-        return;
-    }
+const fullPhone = `${countryCode}-${phone}`;
+const newUser = {
+id:users.length+1,
+name,
+email,
+password:pass,
+role:'customer',
+phone:fullPhone,
+cedula,
+address
+};
 
-    const allowedEmails = [
-        '@gmail.com', '@hotmail.com', '@outlook.com', '@outlook.es', 
-        '@yahoo.com', '@yahoo.es', '@icloud.com', '@me.com'
-    ];
-    const isValidEmail = allowedEmails.some(domain => email.endsWith(domain));
-    if(!isValidEmail){
-        alert(lang==='es'?
-            'Solo se permiten correos de: Gmail, Hotmail, Outlook, Yahoo e iCloud':
-            'Only emails from: Gmail, Hotmail, Outlook, Yahoo and iCloud are allowed');
-        return;
-    }
+users.push(newUser);
+showAlert(lang==='es'?'¡Cuenta creada exitosamente! Ya puedes iniciar sesión.':'Account created successfully! You can now sign in.','success');
+showSection('login');
 
-    if(phone.length < 4){
-        alert(lang==='es'?'Ingresa un número de teléfono válido':'Enter a valid phone number');
-        return;
-    }
-
-    if(users.find(u=>u.email===email)){
-        alert(lang==='es'?'Este email ya está registrado':'This email is already registered');
-        return;
-    }
-
-    const fullPhone = `${countryCode}-${phone}`;
-    users.push({
-        id:users.length+1,
-        name,
-        email,
-        password:pass,
-        role:'customer',
-        phone:fullPhone
-    });
-
-    const successMsg = lang==='es'?
-        `¡Cuenta creada exitosamente! 🎉\nBienvenido/a ${name.split(' ')[0]}!\nYa puedes iniciar sesión con tu email.`:
-        `Account created successfully! 🎉\nWelcome ${name.split(' ')[0]}!\nYou can now sign in with your email.`;
-
-    alert(successMsg);
-    show('login');
-
-    document.getElementById('rn').value='';
-    document.getElementById('re').value='';
-    document.getElementById('rp').value='';
-    document.getElementById('rph').value='';
-
-    document.getElementById('le').value=email;
+// Limpiar formulario
+document.getElementById('rn').value='';
+document.getElementById('re').value='';
+document.getElementById('rp').value='';
+document.getElementById('rph').value='';
+document.getElementById('cedula').value='';
+document.getElementById('address').value='';
 }
 
 function logout(){
-    user=null;
-    cart=[];
-    updateUserInfo();
-    updateCartCount();
-    show('tienda');
-    alert(lang==='es'?'Cerrado':'Logged out');
+user=null;
+cart=[];
+updateUserInfo();
+updateCartCount();
+showSection('tienda');
+showAlert(lang==='es'?'Cerrado':'Logged out','success');
 }
 
 function updateUserInfo(){
-    if(user){
-        document.getElementById('userInfo').classList.remove('hidden');
-        document.getElementById('wt').textContent=`${t[lang].welcome}, ${user.name}`;
-        document.getElementById('lb').classList.add('hidden');
-        document.getElementById('ob').classList.remove('hidden');
-        document.getElementById('pb').classList.remove('hidden');
-        if(user.role==='admin')document.getElementById('ab').classList.remove('hidden');
-    }else{
-        document.getElementById('userInfo').classList.add('hidden');
-        document.getElementById('lb').classList.remove('hidden');
-        document.getElementById('ob').classList.add('hidden');
-        document.getElementById('pb').classList.add('hidden');
-        document.getElementById('ab').classList.add('hidden');
-    }
+if(user){
+document.getElementById('userInfo').classList.remove('hidden');
+document.getElementById('wt').textContent=`${t[lang].welcome}, ${user.name}`;
+document.getElementById('lb').classList.add('hidden');
+document.getElementById('ob').classList.remove('hidden');
+if(user.role==='admin')document.getElementById('ab').classList.remove('hidden');
+}else{
+document.getElementById('userInfo').classList.add('hidden');
+document.getElementById('lb').classList.remove('hidden');
+document.getElementById('ob').classList.add('hidden');
+document.getElementById('ab').classList.add('hidden');
 }
-
-function loadProfile(){
-    if(!user) return;
-    document.getElementById('profile-display-name').textContent = user.name || '-';
-    document.getElementById('profile-display-email').textContent = user.email || '-';
-    document.getElementById('profile-display-phone').textContent = user.phone || '-';
-    document.getElementById('profile-display-address').textContent = user.fullAddress || '-';
-
-    if(user.billingInfo){
-        const billing = user.billingInfo;
-        document.getElementById('billing-name').value = billing.billingName || '';
-        document.getElementById('billing-email').value = billing.billingEmail || '';
-        document.getElementById('billing-phone').value = billing.billingPhone || '';
-        document.getElementById('billing-country-code').value = billing.countryCode || '+506';
-        document.getElementById('billing-province').value = billing.province || '';
-        document.getElementById('billing-canton').value = billing.canton || '';
-        document.getElementById('billing-district').value = billing.district || '';
-        document.getElementById('billing-exact-address').value = billing.exactAddress || '';
-        document.getElementById('billing-postal-code').value = billing.postalCode || '';
-        document.getElementById('billing-cedula').value = billing.cedula || '';
-        document.getElementById('billing-description').value = billing.description || '';
-    }
-}
-
-function saveProfile(){
-    if(!user){
-        alert(lang==='es'?'Debes iniciar sesión':'You must sign in');
-        return;
-    }
-
-    const billingData = {
-        billingName: document.getElementById('billing-name').value.trim(),
-        billingEmail: document.getElementById('billing-email').value.trim(),
-        billingPhone: document.getElementById('billing-phone').value.trim(),
-        countryCode: document.getElementById('billing-country-code').value,
-        province: document.getElementById('billing-province').value,
-        canton: document.getElementById('billing-canton').value.trim(),
-        district: document.getElementById('billing-district').value.trim(),
-        exactAddress: document.getElementById('billing-exact-address').value.trim(),
-        postalCode: document.getElementById('billing-postal-code').value.trim(),
-        cedula: document.getElementById('billing-cedula').value.trim(),
-        description: document.getElementById('billing-description').value.trim()
-    };
-
-    if(!billingData.billingName || !billingData.billingEmail || !billingData.province || !billingData.canton || !billingData.district) {
-        alert(lang==='es'?'Por favor completa todos los campos obligatorios (Nombre, Email, Provincia, Cantón, Distrito)':'Please complete all required fields (Name, Email, Province, Canton, District)');
-        return;
-    }
-
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if(!emailRegex.test(billingData.billingEmail)){
-        alert(lang==='es'?'Por favor ingresa un email válido':'Please enter a valid email');
-        return;
-    }
-
-    user.billingInfo = billingData;
-    user.fullAddress = `${billingData.province}, ${billingData.canton}, ${billingData.district}`;
-    
-    loadProfile();
-
-    showAlert(lang==='es'?
-        '✅ ¡Información guardada exitosamente!' :
-        '✅ Information successfully saved!', 'success');
-
-    console.log('💾 Datos guardados localmente');
-}
-
-function showAlert(message, type) {
-    const alertsContainer = document.getElementById('alerts');
-    const alertDiv = document.createElement('div');
-    alertDiv.className = `alert alert-${type}`;
-    alertDiv.innerHTML = `
-        <div style="display: flex; justify-content: space-between; align-items: center;">
-            <span>${message}</span>
-            <button onclick="this.parentElement.parentElement.remove()" style="background: none; border: none; font-size: 1.2em; cursor: pointer; color: inherit;">×</button>
-        </div>
-    `;
-    
-    alertsContainer.appendChild(alertDiv);
-    
-    setTimeout(() => {
-        if (alertDiv.parentNode) {
-            alertDiv.remove();
-        }
-    }, 5000);
-}
-
-function clearProfile(){
-    if(confirm(lang==='es'?'¿Limpiar toda la información?':'Clear all information?')){
-        document.getElementById('billing-name').value = '';
-        document.getElementById('billing-email').value = '';
-        document.getElementById('billing-phone').value = '';
-        document.getElementById('billing-country-code').value = '+506';
-        document.getElementById('billing-province').value = '';
-        document.getElementById('billing-canton').value = '';
-        document.getElementById('billing-district').value = '';
-        document.getElementById('billing-exact-address').value = '';
-        document.getElementById('billing-postal-code').value = '';
-        document.getElementById('billing-cedula').value = '';
-        document.getElementById('billing-description').value = '';
-    }
 }
 
 function loadAdmin(){
-    document.getElementById('tps').textContent=products.length;
-    document.getElementById('tus').textContent=users.length-1;
-    document.getElementById('ts').textContent=curr==='CRC'?Math.round(sales*rate).toLocaleString():sales.toFixed(2);
+document.getElementById('tps').textContent=products.length;
+document.getElementById('tus').textContent=users.length-1;
+document.getElementById('ts').textContent=curr==='CRC'?Math.round(sales*rate).toLocaleString():sales.toFixed(2);
+document.getElementById('paypal-status').innerHTML = paypalConfig.clientId !== 'ARiqSNQ-c7ORV5f5P8FPcDzQrwiazstmxY6-n2AB4y7IndGYwQU5KjUNnE7McQhmwGwoUTCF250i_YUn' ? 
+`✅ Configurado (${paypalConfig.mode})` : '✅ Configurado (live)';
+}
+
+function previewImage(input, previewId) {
+const preview = document.getElementById(previewId);
+const file = input.files[0];
+
+if (file) {
+const reader = new FileReader();
+reader.onload = function(e) {
+preview.innerHTML = `
+<img src="${e.target.result}" alt="Preview">
+<button class="remove-image" onclick="removeImage('${input.id}', '${previewId}')" title="Eliminar imagen">×</button>
+`;
+};
+reader.readAsDataURL(file);
+} else {
+preview.innerHTML = '<div class="placeholder">📦 Vista previa de la imagen</div>';
+}
+}
+
+function removeImage(inputId, previewId) {
+document.getElementById(inputId).value = '';
+document.getElementById(previewId).innerHTML = '<div class="placeholder">📦 Vista previa de la imagen</div>';
+}
+
+function convertImageToBase64(file) {
+return new Promise((resolve, reject) => {
+const reader = new FileReader();
+reader.onload = () => resolve(reader.result);
+reader.onerror = reject;
+reader.readAsDataURL(file);
+});
 }
 
 function addProduct(){
-    const name=document.getElementById('apn').value;
-    const desc=document.getElementById('apd').value;
-    const price=parseFloat(document.getElementById('app').value);
-    const img=document.getElementById('api').value;
-    if(!name||!desc||!price){alert('Required fields');return;}
-    products.push({id:Date.now(),name,desc,price,imageUrl:img||''});
-    alert('Added');
-    document.getElementById('apn').value='';
-    document.getElementById('apd').value='';
-    document.getElementById('app').value='';
-    document.getElementById('api').value='';
-    loadAdmin();
-    loadProducts();
+const name=document.getElementById('apn').value;
+const desc=document.getElementById('apd').value;
+const price=parseFloat(document.getElementById('app').value);
+const urlImg=document.getElementById('api').value;
+const paypal=document.getElementById('apy').value;
+const fileInput=document.getElementById('product-image');
+
+if(!name||!desc||!price){
+showAlert('Required fields','error');
+return;
+}
+
+if(fileInput.files[0]) {
+convertImageToBase64(fileInput.files[0])
+.then(base64Image => {
+const newProduct = {
+id: Date.now(),
+name,
+desc,
+price,
+imageUrl: base64Image,
+paypalUrl: paypal || ''
+};
+products.push(newProduct);
+clearProductForm();
+showAlert('Producto agregado con imagen','success');
+loadAdmin();
+loadProducts();
+})
+.catch(error => {
+console.error('Error convirtiendo imagen:', error);
+showAlert('Error procesando imagen','error');
+});
+} else if(urlImg) {
+const newProduct = {
+id: Date.now(),
+name,
+desc,
+price,
+imageUrl: urlImg,
+paypalUrl: paypal || ''
+};
+products.push(newProduct);
+clearProductForm();
+showAlert('Producto agregado con URL','success');
+loadAdmin();
+loadProducts();
+} else {
+const newProduct = {
+id: Date.now(),
+name,
+desc,
+price,
+imageUrl: '',
+paypalUrl: paypal || ''
+};
+products.push(newProduct);
+clearProductForm();
+showAlert('Producto agregado sin imagen','success');
+loadAdmin();
+loadProducts();
+}
+}
+
+function clearProductForm() {
+document.getElementById('apn').value='';
+document.getElementById('apd').value='';
+document.getElementById('app').value='';
+document.getElementById('api').value='';
+document.getElementById('apy').value='';
+document.getElementById('product-image').value='';
+document.getElementById('image-preview').innerHTML='<div class="placeholder">📦 Vista previa de la imagen</div>';
 }
 
 function editProduct(id){
-    const p=products.find(x=>x.id===id);
-    if(!p)return;
-    document.getElementById('apn').value=p.name;
-    document.getElementById('apd').value=p.desc;
-    document.getElementById('app').value=p.price;
-    document.getElementById('api').value=p.imageUrl;
-    document.getElementById('apb').onclick=()=>{
-        p.name=document.getElementById('apn').value;
-        p.desc=document.getElementById('apd').value;
-        p.price=parseFloat(document.getElementById('app').value);
-        p.imageUrl=document.getElementById('api').value;
-        alert('Updated');
-        loadProducts();
-        loadAdmin();
-        document.getElementById('apb').onclick=addProduct;
-    };
+const p=products.find(x=>x.id===id);
+if(!p)return;
+document.getElementById('apn').value=p.name;
+document.getElementById('apd').value=p.desc;
+document.getElementById('app').value=p.price;
+document.getElementById('api').value=p.imageUrl.startsWith('data:') ? '' : p.imageUrl;
+document.getElementById('apy').value=p.paypalUrl;
+
+if(p.imageUrl) {
+document.getElementById('image-preview').innerHTML = `
+<img src="${p.imageUrl}" alt="Preview">
+<button class="remove-image" onclick="removeImage('product-image', 'image-preview')" title="Eliminar imagen">×</button>
+`;
+}
+
+document.getElementById('apb').onclick=()=>{
+const fileInput=document.getElementById('product-image');
+const urlImg=document.getElementById('api').value;
+
+if(fileInput.files[0]) {
+convertImageToBase64(fileInput.files[0])
+.then(base64Image => {
+p.name=document.getElementById('apn').value;
+p.desc=document.getElementById('apd').value;
+p.price=parseFloat(document.getElementById('app').value);
+p.imageUrl=base64Image;
+p.paypalUrl=document.getElementById('apy').value;
+showAlert('Updated with new image','success');
+loadProducts();
+loadAdmin();
+clearProductForm();
+document.getElementById('apb').onclick=addProduct;
+});
+} else {
+p.name=document.getElementById('apn').value;
+p.desc=document.getElementById('apd').value;
+p.price=parseFloat(document.getElementById('app').value);
+p.imageUrl=urlImg || p.imageUrl;
+p.paypalUrl=document.getElementById('apy').value;
+showAlert('Updated','success');
+loadProducts();
+loadAdmin();
+clearProductForm();
+document.getElementById('apb').onclick=addProduct;
+}
+};
 }
 
 function deleteProduct(id){
-    if(confirm('Delete?')){
-        products=products.filter(p=>p.id!==id);
-        loadProducts();
-        loadAdmin();
-        alert('Deleted');
-    }
+if(confirm('Delete?')){
+products=products.filter(p=>p.id!==id);
+loadProducts();
+loadAdmin();
+showAlert('Deleted','success');
 }
-
-// FUNCIÓN PARA COMPRA INDIVIDUAL TAMBIÉN MODIFICADA
-function buyProduct(id){
-    if(!user){alert(lang==='es'?'Inicia sesión':'Sign in');return;}
-    const p=products.find(x=>x.id===id);
-    const price=(curr==='CRC'?p.price/rate:p.price).toFixed(2);
-    const container=document.getElementById(`paypal-product-${id}`);
-    container.innerHTML='';
-    paypal.Buttons({
-        createOrder:(data,actions)=>actions.order.create({
-            purchase_units:[{
-                amount:{value:price,currency_code:'USD'},
-                description:`${p.name} - Wishay`
-            }]
-        }),
-        onApprove:(data,actions)=>actions.order.capture().then(details=>{
-            // ENVIAR DATOS DE COMPRA INDIVIDUAL
-            const itemsList = `${p.name} - ${formatPrice(p.price)} x1`;
-            sendOrderAndBillingInfo(details, p.price, itemsList);
-            
-            sales+=p.price;
-            alert(`${lang==='es'?'¡Compra exitosa!':'Purchase successful!'} ${p.name} - ${details.payer.name.given_name}`);
-            container.innerHTML='';
-        }),
-        onError:err=>{
-            alert(lang==='es'?'Error en el pago':'Payment error');
-            console.error(err);
-            container.innerHTML='';
-        },
-        style:{color:'blue',shape:'rect',height:40,layout:'horizontal'}
-    }).render(`#paypal-product-${id}`);
 }
 
 function showDetail(id){
-    const p=products.find(x=>x.id===id);
-    if(!p)return;
-    document.getElementById('mc2').innerHTML=`<div style="text-align:center"><img src="${p.imageUrl}" style="width:100%;max-height:300px;object-fit:contain;border-radius:4px;margin-bottom:1rem"><h2>${p.name}</h2><p>${p.desc}</p><div style="font-size:2rem;font-weight:bold;color:#27ae60;margin:1rem 0">${formatPrice(p.price)}</div><div style="display:flex;gap:1rem;justify-content:center;flex-wrap:wrap">${user?`<button class="btn" onclick="addToCart(${p.id});closeModal()">🛒 ${t[lang].add}</button><button class="btn btn-paypal" onclick="buyProductModal(${p.id})">💳 PayPal</button>`:`<p style="color:#e74c3c">${lang==='es'?'Inicia sesión':'Sign in'}</p>`}</div><div id="paypal-modal-${p.id}" style="margin-top:1rem"></div></div>`;
-    document.getElementById('modal').classList.remove('hidden');
-    document.getElementById('modal').style.display='flex';
-}
-
-// FUNCIÓN PARA COMPRA EN MODAL TAMBIÉN MODIFICADA
-function buyProductModal(id){
-    const p=products.find(x=>x.id===id);
-    const price=(curr==='CRC'?p.price/rate:p.price).toFixed(2);
-    const container=document.getElementById(`paypal-modal-${id}`);
-    container.innerHTML='';
-    paypal.Buttons({
-        createOrder:(data,actions)=>actions.order.create({
-            purchase_units:[{
-                amount:{value:price,currency_code:'USD'},
-                description:`${p.name} - Wishay`
-            }]
-        }),
-        onApprove:(data,actions)=>actions.order.capture().then(details=>{
-            // ENVIAR DATOS DE COMPRA EN MODAL
-            const itemsList = `${p.name} - ${formatPrice(p.price)} x1`;
-            sendOrderAndBillingInfo(details, p.price, itemsList);
-            
-            sales+=p.price;
-            alert(`${lang==='es'?'¡Compra exitosa!':'Purchase successful!'} ${p.name} - ${details.payer.name.given_name}`);
-            closeModal();
-        }),
-        onError:err=>{
-            alert(lang==='es'?'Error en el pago':'Payment error');
-            console.error(err);
-        },
-        style:{color:'blue',shape:'rect',height:50}
-    }).render(`#paypal-modal-${id}`);
+const p=products.find(x=>x.id===id);
+if(!p)return;
+document.getElementById('mc2').innerHTML=`
+<div style="text-align:center">
+${p.imageUrl?`<img src="${p.imageUrl}" style="width:100%;max-height:300px;object-fit:contain;border-radius:4px;margin-bottom:1rem">`:`<div class="pi">📦 ${t[lang].noimg}</div>`}
+<h2>${p.name}</h2>
+<p>${p.desc}</p>
+<div style="font-size:2rem;font-weight:bold;color:#27ae60;margin:1rem 0">${formatPrice(p.price)}</div>
+<div style="display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;margin-bottom:1rem">
+${user?`<button class="btn" onclick="addToCart(${p.id});closeModal()">🛒 ${t[lang].add}</button>`:`<p style="color:#e74c3c">${lang==='es'?'Inicia sesión':'Sign in'}</p>`}
+${user?`<button class="btn btn-paypal-cart" onclick="buyNowSingle(${p.id})" style="background:#0070ba;">💳 ${t[lang].buyWithCard}</button>`:''}
+</div>
+${p.paypalUrl?`<div style="margin-top:1rem;padding-top:1rem;border-top:1px solid #ddd">
+<p style="font-size:0.9rem;color:#666;margin-bottom:0.5rem">${t[lang].directPayment}</p>
+<a href="${p.paypalUrl}" class="btn btn-paypal" target="_blank" style="font-size:0.9rem;">💳 PayPal.me</a>
+</div>`:''}
+<div id="single-paypal-container" style="margin-top:1rem;"></div>
+</div>
+`;
+document.getElementById('modal').classList.remove('hidden');
+document.getElementById('modal').style.display='flex';
 }
 
 function closeModal(){
-    document.getElementById('modal').classList.add('hidden');
-    document.getElementById('modal').style.display='none';
+document.getElementById('modal').classList.add('hidden');
+document.getElementById('modal').style.display='none';
+}
+
+function showAlert(msg,type){
+const c=document.getElementById('alertContainer');
+const a=document.createElement('div');
+a.className=`alert alert-${type}`;
+a.textContent=msg;
+c.appendChild(a);
+setTimeout(()=>a.remove(),3000);
 }
 
 // Inicialización
@@ -1165,9 +825,10 @@ loadProducts();
 updateTexts();
 updateCurrency();
 updateUserInfo();
+renderPayPalButton();
 
 document.getElementById('modal').addEventListener('click',e=>{
-    if(e.target===document.getElementById('modal'))closeModal();
+if(e.target===document.getElementById('modal'))closeModal();
 });
 </script>
 </body>
