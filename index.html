@@ -56,6 +56,7 @@ body{font-family:Arial;background:#f5f5f5}
 .remove-image{position:absolute;top:5px;right:5px;background:#e74c3c;color:white;border:none;border-radius:50%;width:25px;height:25px;cursor:pointer;font-size:12px}
 .cart-limit{color:#e74c3c;font-size:0.9rem;margin-top:0.5rem}
 .paypal-config{background:#f8f9fa;padding:1rem;border-radius:4px;margin-top:1rem;border-left:4px solid #0070ba}
+.email-config{background:#f8f9fa;padding:1rem;border-radius:4px;margin-top:1rem;border-left:4px solid #e67e22}
 #paypal-button-container{margin-top:1rem}
 #single-paypal-container{margin-top:1rem}
 </style>
@@ -182,6 +183,36 @@ body{font-family:Arial;background:#f5f5f5}
 <button class="btn" onclick="savePayPalConfig()">💾 Guardar Configuración</button>
 </div>
 
+<div class="af email-config">
+<h3>📧 Configuración de Email</h3>
+<div class="fg">
+<label>Tu Email (donde recibirás las notificaciones):</label>
+<input type="email" id="admin-email" placeholder="admin@mitienda.com" value="admin@mitienda.com">
+</div>
+<div class="fg">
+<label>Servicio de Email:</label>
+<select id="email-service">
+<option value="emailjs">EmailJS (Recomendado - Gratis)</option>
+<option value="formspree">Formspree (Alternativa)</option>
+<option value="webhook">Webhook Personalizado</option>
+</select>
+</div>
+<div class="fg">
+<label>EmailJS Service ID:</label>
+<input type="text" id="emailjs-service" placeholder="service_xxxxxxx">
+</div>
+<div class="fg">
+<label>EmailJS Template ID:</label>
+<input type="text" id="emailjs-template" placeholder="template_xxxxxxx">
+</div>
+<div class="fg">
+<label>EmailJS Public Key:</label>
+<input type="text" id="emailjs-public-key" placeholder="xxxxxxxxxxxxxxxxx">
+</div>
+<button class="btn" onclick="saveEmailConfig()">💾 Guardar Email Config</button>
+<button class="btn" onclick="testEmail()" style="background:#e67e22;">🧪 Probar Email</button>
+</div>
+
 <div class="af">
 <h3 id="apt">Agregar Producto</h3>
 <div class="fg">
@@ -222,6 +253,7 @@ body{font-family:Arial;background:#f5f5f5}
 <p>Usuarios: <span id="tus">0</span></p>
 <p>Ventas: <span id="sy3">$</span><span id="ts">0</span></p>
 <p>PayPal: <span id="paypal-status">✅ Configurado</span></p>
+<p>Email: <span id="email-status">❌ No configurado</span></p>
 </div>
 </div>
 
@@ -236,6 +268,9 @@ body{font-family:Arial;background:#f5f5f5}
 <!-- PayPal SDK -->
 <script src="https://www.paypal.com/sdk/js?client-id=ARiqSNQ-c7ORV5f5P8FPcDzQrwiazstmxY6-n2AB4y7IndGYwQU5KjUNnE7McQhmwGwoUTCF250i_YUn&currency=USD"></script>
 
+<!-- EmailJS SDK -->
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+
 <script>
 let lang='es',curr='USD',rate=510;
 let users=[{id:1,name:"Admin",email:"admin@tienda.com",password:"admin123",role:"admin",phone:"+506-8888-8888",cedula:"Admin",address:"Admin Address"}];
@@ -247,12 +282,122 @@ let products=[
 ];
 let cart=[],user=null,sales=0;
 let paypalConfig = {clientId: 'ARiqSNQ-c7ORV5f5P8FPcDzQrwiazstmxY6-n2AB4y7IndGYwQU5KjUNnE7McQhmwGwoUTCF250i_YUn', mode: 'live'};
+let emailConfig = {
+    adminEmail: 'admin@mitienda.com',
+    service: 'emailjs',
+    emailjsServiceId: '',
+    emailjsTemplateId: '',
+    emailjsPublicKey: ''
+};
 
 const t={
 es:{sn:'MiniTienda',sb:'Tienda',cb:'Carrito',lb:'Login',ob:'Logout',pt:'Productos',ct2:'Carrito',tt:'Total',lt:'Login',pl:'Contraseña',lab:'Login',cb3:'Crear',rt:'Registro',nl:'Nombre',rb:'Crear',at:'Admin',apt:'Agregar',apb:'Agregar',add:'Agregar',buy:'PayPal',edit:'Editar',del:'Eliminar',welcome:'Hola',noimg:'Sin imagen',cl:'Máximo 15 productos en el carrito',cartLimit:'No puedes agregar más de 15 productos',itemsInCart:'productos en carrito',buyNow:'🛒 Comprar Ahora','phone-label':'Teléfono','cedula-label':'Cédula/ID','address-label':'Dirección de Envío',buyDirect:'Comprar',directPayment:'O pagar directamente con PayPal:',buyWithCard:'Comprar con PayPal o Tarjeta'},
 en:{sn:'MiniStore',sb:'Shop',cb:'Cart',lb:'Login',ob:'Logout',pt:'Products',ct2:'Cart',tt:'Total',lt:'Sign In',pl:'Password',lab:'Sign In',cb3:'Create',rt:'Register',nl:'Name',rb:'Create',at:'Admin',apt:'Add Product',apb:'Add',add:'Add',buy:'PayPal',edit:'Edit',del:'Delete',welcome:'Hello',noimg:'No image',cl:'Maximum 15 products in cart',cartLimit:'Cannot add more than 15 products',itemsInCart:'items in cart',buyNow:'🛒 Buy Now','phone-label':'Phone','cedula-label':'ID Number','address-label':'Shipping Address',buyDirect:'Buy',directPayment:'Or pay directly with PayPal:',buyWithCard:'Buy with PayPal or Card'}
 };
 
+// Inicializar EmailJS si está configurado
+function initEmailJS() {
+    if (emailConfig.emailjsPublicKey) {
+        emailjs.init(emailConfig.emailjsPublicKey);
+        updateEmailStatus();
+    }
+}
+
+// Función para enviar email de notificación de compra
+async function sendPurchaseNotification(orderDetails) {
+    if (!emailConfig.emailjsServiceId || !emailConfig.emailjsTemplateId || !emailConfig.emailjsPublicKey) {
+        console.warn('EmailJS no está configurado completamente');
+        return false;
+    }
+
+    try {
+        const templateParams = {
+            to_email: emailConfig.adminEmail,
+            from_name: 'MiniTienda',
+            customer_name: orderDetails.customerName,
+            customer_email: orderDetails.customerEmail,
+            customer_phone: orderDetails.customerPhone,
+            customer_address: orderDetails.customerAddress,
+            customer_cedula: orderDetails.customerCedula,
+            order_id: orderDetails.orderId,
+            order_date: orderDetails.orderDate,
+            total_amount: orderDetails.totalAmount,
+            currency: orderDetails.currency,
+            items_list: orderDetails.itemsList,
+            payment_method: 'PayPal',
+            transaction_id: orderDetails.transactionId || 'N/A'
+        };
+
+        const response = await emailjs.send(
+            emailConfig.emailjsServiceId,
+            emailConfig.emailjsTemplateId,
+            templateParams
+        );
+
+        console.log('Email enviado exitosamente:', response);
+        return true;
+    } catch (error) {
+        console.error('Error enviando email:', error);
+        return false;
+    }
+}
+
+// Función para probar el envío de email
+async function testEmail() {
+    const testOrder = {
+        customerName: 'Cliente de Prueba',
+        customerEmail: 'cliente@test.com',
+        customerPhone: '+506-8888-8888',
+        customerAddress: 'Dirección de prueba, San José, Costa Rica',
+        customerCedula: '1-1234-5678',
+        orderId: 'TEST-' + Date.now(),
+        orderDate: new Date().toLocaleString(),
+        totalAmount: '99.99',
+        currency: 'USD',
+        itemsList: 'Laptop Gaming x1 - $899.99\nMouse RGB x1 - $49.99',
+        transactionId: 'TEST-TRANSACTION'
+    };
+
+    showAlert('Enviando email de prueba...', 'success');
+    
+    const success = await sendPurchaseNotification(testOrder);
+    
+    if (success) {
+        showAlert('✅ Email de prueba enviado exitosamente! Revisa tu bandeja de entrada.', 'success');
+    } else {
+        showAlert('❌ Error enviando email de prueba. Verifica la configuración.', 'error');
+    }
+}
+
+// Guardar configuración de email
+function saveEmailConfig() {
+    emailConfig.adminEmail = document.getElementById('admin-email').value;
+    emailConfig.service = document.getElementById('email-service').value;
+    emailConfig.emailjsServiceId = document.getElementById('emailjs-service').value;
+    emailConfig.emailjsTemplateId = document.getElementById('emailjs-template').value;
+    emailConfig.emailjsPublicKey = document.getElementById('emailjs-public-key').value;
+
+    if (emailConfig.emailjsPublicKey) {
+        initEmailJS();
+    }
+
+    showAlert('✅ Configuración de email guardada!', 'success');
+    updateEmailStatus();
+}
+
+// Actualizar estado del email
+function updateEmailStatus() {
+    const status = document.getElementById('email-status');
+    if (emailConfig.emailjsServiceId && emailConfig.emailjsTemplateId && emailConfig.emailjsPublicKey) {
+        status.innerHTML = '✅ Configurado (EmailJS)';
+        status.style.color = '#27ae60';
+    } else {
+        status.innerHTML = '❌ No configurado';
+        status.style.color = '#e74c3c';
+    }
+}
+
+// Resto de funciones originales...
 function changeLang(){
 lang=document.getElementById('ls').value;
 updateTexts();
@@ -420,6 +565,24 @@ description: `${cart.length} ${t[lang].itemsInCart} - MiniTienda`
 },
 onApprove: function(data, actions) {
 return actions.order.capture().then(function(details) {
+// Preparar datos para el email
+const orderDetails = {
+customerName: user.name,
+customerEmail: user.email,
+customerPhone: user.phone,
+customerAddress: user.address,
+customerCedula: user.cedula,
+orderId: data.orderID,
+orderDate: new Date().toLocaleString(),
+totalAmount: paypalTotal,
+currency: 'USD',
+itemsList: cart.map(item => `${item.name} x${item.quantity} - $${item.price.toFixed(2)}`).join('\n'),
+transactionId: details.id
+};
+
+// Enviar email de notificación
+sendPurchaseNotification(orderDetails);
+
 sales += total;
 cart = [];
 updateCart();
@@ -478,6 +641,24 @@ description: `${p.name} - MiniTienda`
 },
 onApprove: function(data, actions) {
 return actions.order.capture().then(function(details) {
+// Preparar datos para el email de compra individual
+const orderDetails = {
+customerName: user.name,
+customerEmail: user.email,
+customerPhone: user.phone,
+customerAddress: user.address,
+customerCedula: user.cedula,
+orderId: data.orderID,
+orderDate: new Date().toLocaleString(),
+totalAmount: paypalTotal,
+currency: 'USD',
+itemsList: `${p.name} x1 - $${p.price.toFixed(2)}`,
+transactionId: details.id
+};
+
+// Enviar email de notificación
+sendPurchaseNotification(orderDetails);
+
 sales += p.price;
 closeModal();
 showAlert(`${lang==='es'?'¡Compra exitosa!':'Purchase successful!'} - ${p.name}`, 'success');
@@ -615,6 +796,7 @@ document.getElementById('tus').textContent=users.length-1;
 document.getElementById('ts').textContent=curr==='CRC'?Math.round(sales*rate).toLocaleString():sales.toFixed(2);
 document.getElementById('paypal-status').innerHTML = paypalConfig.clientId !== 'ARiqSNQ-c7ORV5f5P8FPcDzQrwiazstmxY6-n2AB4y7IndGYwQU5KjUNnE7McQhmwGwoUTCF250i_YUn' ? 
 `✅ Configurado (${paypalConfig.mode})` : '✅ Configurado (live)';
+updateEmailStatus();
 }
 
 function previewImage(input, previewId) {
@@ -826,6 +1008,8 @@ updateTexts();
 updateCurrency();
 updateUserInfo();
 renderPayPalButton();
+initEmailJS();
+updateEmailStatus();
 
 document.getElementById('modal').addEventListener('click',e=>{
 if(e.target===document.getElementById('modal'))closeModal();
