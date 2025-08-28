@@ -1,6 +1,8 @@
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>MiniTienda</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
@@ -55,8 +57,7 @@ body{font-family:Arial;background:var(--bg-color, #f5f5f5)}
 .category-card.active{border-color:var(--secondary-color);background:#e3f2fd}
 .category-card.disabled{cursor:not-allowed;opacity:0.7}
 .category-card.disabled:hover{transform:none;box-shadow:var(--shadow)}
-.category-icon{font-size:2.5rem;margin-bottom:0.5rem;display:block}
-.category-name{font-weight:bold;color:var(--text-color);font-size:0.9rem}
+.category-name{font-weight:bold;color:var(--text-color);font-size:0.9rem;display:flex;align-items:center;justify-content:center;gap:0.5rem}
 .category-count{font-size:0.8rem;color:var(--text-light);margin-top:0.25rem}
 .filter-section{display:flex;gap:1rem;align-items:center;margin-bottom:1rem;flex-wrap:wrap}
 .filter-section select{padding:0.5rem;border:1px solid #ddd;border-radius:var(--border-radius);background:white}
@@ -236,15 +237,28 @@ body{font-family:Arial;background:var(--bg-color, #f5f5f5)}
 
 /* RESPONSIVE */
 @media (max-width: 768px) {
-    .categories-grid{grid-template-columns:repeat(3,1fr);gap:0.5rem}
+    .categories-grid{grid-template-columns:1fr 1fr;gap:0.5rem}
     .category-card{padding:0.75rem}
-    .category-icon{font-size:2rem}
     .category-name{font-size:0.8rem}
-    .filter-section{flex-direction:column;align-items:stretch;gap:0.5rem}
-    .wix-editor-panel{width:100%;right:-100%}
-    .wix-editor-toggle{right:10px}
-    .wix-tools-grid{grid-template-columns:1fr}
 }
+
+@media (max-width: 480px) {
+    .categories-grid{grid-template-columns:1fr;gap:0.5rem}
+    .category-card{padding:0.5rem}
+    .category-name{font-size:0.75rem}
+}
+/* PREVISUALIZADOR DE DISPOSITIVOS */
+.device-preview-section{background:#f8f9fa;padding:1.5rem;border-radius:8px;margin-top:1rem;border-left:4px solid #3498db}
+.device-preview-controls{display:flex;gap:0.5rem;margin-bottom:1rem;flex-wrap:wrap}
+.device-btn{background:white;border:2px solid #ddd;padding:0.5rem 1rem;border-radius:4px;cursor:pointer;display:flex;align-items:center;gap:0.5rem;font-size:0.9rem}
+.device-btn.active{border-color:#3498db;background:#e3f2fd;color:#3498db}
+.device-btn:hover{border-color:#3498db}
+.preview-container{background:white;border-radius:8px;padding:1rem;box-shadow:0 4px 8px rgba(0,0,0,0.1)}
+.preview-frame{border:none;width:100%;border-radius:4px;box-shadow:0 2px 10px rgba(0,0,0,0.1);transition:all 0.3s ease}
+.device-desktop{width:100%;height:600px}
+.device-tablet{width:768px;height:600px;margin:0 auto;max-width:100%}
+.device-mobile{width:375px;height:600px;margin:0 auto;max-width:100%}
+.preview-info{text-align:center;color:#666;font-size:0.9rem;margin-bottom:1rem}
 </style>
 </head>
 <body>
@@ -610,6 +624,8 @@ body{font-family:Arial;background:var(--bg-color, #f5f5f5)}
 
 <div id="login" class="hidden">
 <h2 id="lt">Login</h2>
+<div id="google-signin-login" style="text-align:center;margin:1rem 0;"></div>
+<div style="text-align:center;color:#666;margin:1rem 0;">- o -</div>
 <div class="fg">
 <label>Email:</label>
 <input type="email" id="le" placeholder="email@email.com">
@@ -919,6 +935,35 @@ Una vez confirmada tu cuenta, podrás iniciar sesión y realizar compras. 🛒
 <p>Presets de Entrega: <span id="delivery-presets-count">0</span></p>
 <p>Categorías: <span id="categories-count">6</span></p>
 </div>
+<div class="af device-preview-section">
+<h3>📱 Vista Previa de Dispositivos</h3>
+<p style="margin-bottom:1rem;color:#666;">Ve cómo se ve tu tienda en diferentes dispositivos</p>
+
+<div class="device-preview-controls">
+<button class="device-btn active" onclick="changePreviewDevice('desktop')" id="desktop-btn">
+<span>🖥️</span> Escritorio
+</button>
+<button class="device-btn" onclick="changePreviewDevice('tablet')" id="tablet-btn">
+<span>📱</span> Tablet
+</button>
+<button class="device-btn" onclick="changePreviewDevice('mobile')" id="mobile-btn">
+<span>📱</span> Móvil
+</button>
+</div>
+
+<div class="preview-info" id="preview-info">
+Vista de Escritorio - 1200px × 600px
+</div>
+
+<div class="preview-container">
+<iframe class="preview-frame device-desktop" id="preview-frame" src="about:blank"></iframe>
+</div>
+
+<div style="margin-top:1rem;text-align:center;">
+<button class="btn" onclick="refreshPreview()">🔄 Actualizar Vista</button>
+<button class="btn" onclick="openInNewTab()" style="background:#9b59b6;">🔗 Abrir en Nueva Pestaña</button>
+</div>
+</div>
 
 <div class="af data-controls">
 <h3>💾 Control de Datos</h3>
@@ -940,6 +985,7 @@ Una vez confirmada tu cuenta, podrás iniciar sesión y realizar compras. 🛒
 
 <!-- PayPal SDK -->
 <script src="https://www.paypal.com/sdk/js?client-id=ARiqSNQ-c7ORV5f5P8FPcDzQrwiazstmxY6-n2AB4y7IndGYwQU5KjUNnE7McQhmwGwoUTCF250i_YUn&currency=USD"></script>
+<script src="https://accounts.google.com/gsi/client" async defer></script>
 
 <!-- EmailJS SDK -->
 <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
@@ -953,12 +999,12 @@ let users=[{id:1,name:"Admin",email:"admin@tienda.com",password:"admin123",role:
 
 // SISTEMA DE CATEGORÍAS
 const categories = {
-    hogar: { id: 'hogar', name: { es: '🏠 Hogar', en: '🏠 Home' }, icon: '🏠' },
-    autos: { id: 'autos', name: { es: '🚗 Autos', en: '🚗 Cars' }, icon: '🚗' },
-    mascotas: { id: 'mascotas', name: { es: '🐾 Mascotas', en: '🐾 Pets' }, icon: '🐾' },
-    jardineria: { id: 'jardineria', name: { es: '🌱 Jardinería y Plantas', en: '🌱 Gardening & Plants' }, icon: '🌱' },
-    electronica: { id: 'electronica', name: { es: '📱 Electrónica y Accesorios', en: '📱 Electronics & Accessories' }, icon: '📱' },
-    ropa: { id: 'ropa', name: { es: '👗 Ropa y Accesorios', en: '👗 Clothing & Accessories' }, icon: '👗' }
+    hogar: { id: 'hogar', name: { es: '🏠 Hogar', en: '🏠 Home' } },
+    autos: { id: 'autos', name: { es: '🚗 Autos', en: '🚗 Cars' } },
+    mascotas: { id: 'mascotas', name: { es: '🐾 Mascotas', en: '🐾 Pets' } },
+    jardineria: { id: 'jardineria', name: { es: '🌱 Jardinería', en: '🌱 Gardening' } },
+    electronica: { id: 'electronica', name: { es: '📱 Electrónica', en: '📱 Electronics' } },
+    ropa: { id: 'ropa', name: { es: '👗 Ropa', en: '👗 Clothing' } }
 };
 
 let selectedCategory = '';
@@ -1831,13 +1877,12 @@ function loadCategories() {
         const isDisabled = wixEditMode && user?.role !== 'admin';
         
         return `
-        <div class="category-card ${selectedCategory === cat.id ? 'active' : ''} ${isDisabled ? 'disabled' : ''}" 
-             ${isClickable ? `onclick="selectCategory('${cat.id}')"` : ''}>
-            <span class="category-icon">${cat.icon}</span>
-            <div class="category-name">${cat.name[lang]}</div>
-            <div class="category-count">${count} productos</div>
-        </div>
-        `;
+<div class="category-card ${selectedCategory === cat.id ? 'active' : ''}" 
+     onclick="selectCategory('${cat.id}')">
+    <div class="category-name">${cat.name[lang]}</div>
+    <div class="category-count">${count} productos</div>
+</div>
+`;
     }).join('');
     
     filter.innerHTML = `
@@ -2958,6 +3003,7 @@ function loadAdmin(){
     document.getElementById('delivery-presets-count').textContent = deliveryPresets.length;
     document.getElementById('categories-count').textContent = Object.keys(categories).length;
     updateEmailStatus();
+    initializeDevicePreview();
 }
 
 function previewImage(input, previewId) {
@@ -3416,6 +3462,88 @@ setInterval(() => {
     saveWixDesignToStorage();
 }, 30000);
 
+// SISTEMA DE PREVIEW DE DISPOSITIVOS
+let currentDevice = 'desktop';
+let previewWindow = null;
+
+function changePreviewDevice(device) {
+    currentDevice = device;
+    
+    // Actualizar botones activos
+    document.querySelectorAll('.device-btn').forEach(btn => btn.classList.remove('active'));
+    document.getElementById(device + '-btn').classList.add('active');
+    
+    // Actualizar frame
+    const frame = document.getElementById('preview-frame');
+    const info = document.getElementById('preview-info');
+    
+    frame.className = `preview-frame device-${device}`;
+    
+    // Actualizar información
+    const deviceInfo = {
+        desktop: 'Vista de Escritorio - 1200px × 600px',
+        tablet: 'Vista de Tablet - 768px × 600px',
+        mobile: 'Vista de Móvil - 375px × 600px'
+    };
+    
+    info.textContent = deviceInfo[device];
+    
+    // Actualizar contenido del frame si ya está cargado
+    if (frame.src !== 'about:blank') {
+        setTimeout(() => refreshPreview(), 300);
+    }
+}
+
+function refreshPreview() {
+    const frame = document.getElementById('preview-frame');
+    
+    // Crear una copia del HTML actual
+    const currentHTML = document.documentElement.outerHTML;
+    
+    // Crear un blob con el HTML
+    const blob = new Blob([currentHTML], { type: 'text/html' });
+    const url = URL.createObjectURL(blob);
+    
+    frame.src = url;
+    
+    // Limpiar el URL después de cargar
+    frame.onload = () => {
+        setTimeout(() => URL.revokeObjectURL(url), 1000);
+        
+        // Navegar a la tienda en el frame
+        try {
+            frame.contentWindow.showSection('tienda');
+        } catch (e) {
+            console.log('No se pudo navegar en el frame');
+        }
+    };
+}
+
+function openInNewTab() {
+    if (previewWindow && !previewWindow.closed) {
+        previewWindow.focus();
+        return;
+    }
+    
+    previewWindow = window.open('', 'preview', 'width=1200,height=800,scrollbars=yes,resizable=yes');
+    previewWindow.document.write(document.documentElement.outerHTML);
+    previewWindow.document.close();
+    
+    // Navegar a la tienda
+    setTimeout(() => {
+        try {
+            previewWindow.showSection('tienda');
+        } catch (e) {
+            console.log('No se pudo navegar en la nueva ventana');
+        }
+    }, 500);
+}
+
+function initializeDevicePreview() {
+    if (user && user.role === 'admin') {
+        setTimeout(() => refreshPreview(), 1000);
+    }
+}
 console.log('🛒 MiniTienda con Editor Wix completamente cargada');
 console.log('🎨 Funciones Wix disponibles:', {
     toggleWixEditor,
@@ -3425,6 +3553,24 @@ console.log('🎨 Funciones Wix disponibles:', {
     loadWixDesign,
     resetWixDesign
 });
+function initGoogleLogin() {
+    if (typeof google !== 'undefined') {
+        google.accounts.id.initialize({
+            client_id: '464394311844-7amlj67do43jhh40bu4m9fkcnfva344j.apps.googleusercontent.com',
+            callback: (response) => {
+                alert('Google login funcionando - Token recibido');
+                console.log(response);
+            }
+        });
+        
+        google.accounts.id.renderButton(
+            document.getElementById('google-signin-login'),
+            { theme: 'outline', size: 'large' }
+        );
+    }
+}
+
+setTimeout(initGoogleLogin, 2000);
 </script>
 </body>
 </html>
