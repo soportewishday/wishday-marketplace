@@ -756,9 +756,36 @@ Una vez confirmada tu cuenta, podrás iniciar sesión y realizar compras. 🛒
 <label>EmailJS Public Key:</label>
 <input type="text" id="emailjs-public-key" placeholder="xxxxxxxxxxxxxxxxx">
 </div>
+
 <button class="btn" onclick="saveEmailConfig()">💾 Guardar Email Config</button>
 <button class="btn" onclick="testEmail()" style="background:#e67e22;">🧪 Probar Email</button>
 <button class="btn" onclick="testConfirmationEmail()" style="background:#9b59b6;">📧 Probar Confirmación</button>
+</div><div class="af email-config">
+    <h3>🔐 Configuración de Google OAuth</h3>
+    <div class="fg">
+        <label>Estado del servicio:</label>
+        <select id="google-enabled" onchange="toggleGoogleAuth()">
+            <option value="false">Deshabilitado</option>
+            <option value="true">Habilitado</option>
+        </select>
+    </div>
+    <div class="fg">
+        <label>Google Client ID:</label>
+        <input type="text" id="google-client-id" placeholder="Tu Client ID de Google Cloud Console">
+        <small style="color:#666;font-size:0.8rem;display:block;margin-top:0.25rem;">
+            Obtén tu Client ID desde Google Cloud Console → APIs y servicios → Credenciales
+        </small>
+    </div>
+    <div class="fg">
+        <label>Dominios autorizados:</label>
+        <input type="text" id="google-domains" placeholder="localhost, tudominio.com">
+        <small style="color:#666;font-size:0.8rem;display:block;margin-top:0.25rem;">
+            Estos dominios deben estar configurados en Google Cloud Console
+        </small>
+    </div>
+    <button class="btn" onclick="saveGoogleConfig()">💾 Guardar Configuración Google</button>
+    <button class="btn" onclick="testGoogleConfig()" style="background:#e67e22;">🧪 Probar Google Login</button>
+    <div id="google-status" style="margin-top:0.5rem;font-weight:bold;">❌ No configurado</div>
 </div>
 
 <div class="af delivery-management">
@@ -1805,6 +1832,10 @@ let products=[
 
 let cart=[],user=null,sales=0;
 let paypalConfig = {clientId: 'ARiqSNQ-c7ORV5f5P8FPcDzQrwiazstmxY6-n2AB4y7IndGYwQU5KjUNnE7McQhmwGwoUTCF250i_YUn', mode: 'live'};
+let googleConfig = {
+    clientId: '',
+    enabled: false
+};
 let emailConfig = {
     adminEmail: 'admin@mitienda.com',
     service: 'emailjs',
@@ -2226,6 +2257,7 @@ function saveToStorage() {
     const dataToSave = {
         emailConfig: emailConfig,
         paypalConfig: paypalConfig,
+        googleConfig: googleConfig,
         users: users,
         products: products,
         deliveryPresets: deliveryPresets,
@@ -2249,6 +2281,11 @@ function loadFromStorage() {
             
             emailConfig = {...emailConfig, ...(data.emailConfig || {})};
             paypalConfig = {...paypalConfig, ...(data.paypalConfig || {})};
+            
+            // CORRECCIÓN AQUÍ - Usar 'data' en lugar de variable indefinida
+            if (data.googleConfig) {
+                googleConfig = {...googleConfig, ...data.googleConfig};
+            }
             
             if (data.deliveryPresets && data.deliveryPresets.length > 0) {
                 deliveryPresets = data.deliveryPresets;
@@ -2290,11 +2327,53 @@ function fillFormFields() {
         document.getElementById('paypal-client-id').value = paypalConfig.clientId;
         document.getElementById('paypal-mode').value = paypalConfig.mode;
     }
-    
+
     document.getElementById('ls').value = lang;
     document.getElementById('cs').value = curr;
+    fillGoogleFields();
 }
 
+function fillGoogleFields() {
+    // Llenar el campo Client ID si existe en la configuración
+    const clientIdInput = document.getElementById('google-client-id');
+    if (clientIdInput && googleConfig.clientId) {
+        clientIdInput.value = googleConfig.clientId;
+    }
+    
+    // Llenar el campo de dominios si existe en la configuración
+    const domainsInput = document.getElementById('google-domains');
+    if (domainsInput && googleConfig.domains) {
+        domainsInput.value = googleConfig.domains;
+    }
+    
+    // Establecer el estado habilitado/deshabilitado
+    const enabledSelect = document.getElementById('google-enabled');
+    if (enabledSelect) {
+        enabledSelect.value = googleConfig.enabled ? 'true' : 'false';
+    }
+    
+    // Actualizar el estado visual
+    updateGoogleStatus();
+    
+    // Habilitar/deshabilitar campos según el estado
+    toggleGoogleAuthFields();
+}
+
+// Función auxiliar para habilitar/deshabilitar campos
+function toggleGoogleAuthFields() {
+    const clientIdInput = document.getElementById('google-client-id');
+    const domainsInput = document.getElementById('google-domains');
+    
+    if (clientIdInput && domainsInput) {
+        if (googleConfig.enabled) {
+            clientIdInput.disabled = false;
+            domainsInput.disabled = false;
+        } else {
+            clientIdInput.disabled = true;
+            domainsInput.disabled = true;
+        }
+    }
+}
 function exportData() {
     const dataToExport = {
         emailConfig: emailConfig,
@@ -2532,6 +2611,203 @@ async function testEmail() {
     } else {
         showAlert('❌ Error enviando email de prueba', 'error');
     }
+}
+
+// ===== FUNCIONES DE GOOGLE OAUTH =====
+
+function saveGoogleConfig() {
+    const clientId = document.getElementById('google-client-id').value.trim();
+    const enabled = document.getElementById('google-enabled').value === 'true';
+    const domains = document.getElementById('google-domains').value.trim();
+    
+    // Validar que si está habilitado, tenga Client ID
+    if (enabled && !clientId) {
+        showAlert('Debes proporcionar un Client ID para habilitar Google OAuth', 'error');
+        return;
+    }
+    
+    googleConfig = {
+        clientId: clientId,
+        enabled: enabled,
+        domains: domains
+    };
+    
+    // Guardar en storage
+    saveToStorage();
+    updateGoogleStatus();
+    
+    if (enabled && clientId) {
+        showAlert('Configuración de Google OAuth guardada. Recarga la página para aplicar cambios.', 'success');
+        // Reinicializar Google Login después de guardar
+        setTimeout(() => {
+            initGoogleLogin();
+        }, 1000);
+    } else {
+        showAlert('Google OAuth deshabilitado o configuración guardada', 'success');
+        // Ocultar botón si se deshabilitó
+        const googleButton = document.getElementById('google-signin-login');
+        if (googleButton) {
+            googleButton.style.display = 'none';
+        }
+    }
+}
+
+function testGoogleConfig() {
+    if (!googleConfig.enabled || !googleConfig.clientId) {
+        showAlert('Primero configura y habilita Google OAuth', 'error');
+        return;
+    }
+    
+    showAlert('Probando configuración de Google...', 'success');
+    
+    // Verificar que el script de Google esté cargado
+    if (typeof google === 'undefined' || !google.accounts) {
+        showAlert('Error: Google Identity Services no está cargado. Verifica tu conexión a internet.', 'error');
+        return;
+    }
+    
+    // Intentar inicializar Google Login
+    try {
+        initGoogleLogin();
+        showAlert('Configuración de Google OAuth parece correcta. Verifica que el botón aparezca en el login.', 'success');
+    } catch (error) {
+        console.error('Error en configuración de Google:', error);
+        showAlert('Error en la configuración de Google OAuth: ' + error.message, 'error');
+    }
+}
+
+function updateGoogleStatus() {
+    const statusDiv = document.getElementById('google-status');
+    if (!statusDiv) return;
+    
+    if (googleConfig.enabled && googleConfig.clientId) {
+        statusDiv.innerHTML = '✅ Configurado y habilitado';
+        statusDiv.style.color = '#27ae60';
+        statusDiv.style.fontWeight = 'bold';
+    } else if (googleConfig.clientId && !googleConfig.enabled) {
+        statusDiv.innerHTML = '⚪ Configurado pero deshabilitado';
+        statusDiv.style.color = '#f39c12';
+        statusDiv.style.fontWeight = 'bold';
+    } else {
+        statusDiv.innerHTML = '❌ No configurado';
+        statusDiv.style.color = '#e74c3c';
+        statusDiv.style.fontWeight = 'bold';
+    }
+}
+
+function toggleGoogleAuth() {
+    const enabled = document.getElementById('google-enabled').value === 'true';
+    const clientIdInput = document.getElementById('google-client-id');
+    const domainsInput = document.getElementById('google-domains');
+    
+    if (enabled) {
+        clientIdInput.disabled = false;
+        domainsInput.disabled = false;
+        clientIdInput.style.opacity = '1';
+        domainsInput.style.opacity = '1';
+        showAlert('Google OAuth habilitado. Configura el Client ID y guarda los cambios.', 'success');
+    } else {
+        clientIdInput.disabled = true;
+        domainsInput.disabled = true;
+        clientIdInput.style.opacity = '0.6';
+        domainsInput.style.opacity = '0.6';
+        
+        // Ocultar botón de Google si se deshabilita
+        const googleButton = document.getElementById('google-signin-login');
+        if (googleButton) {
+            googleButton.style.display = 'none';
+        }
+        showAlert('Google OAuth deshabilitado', 'success');
+    }
+}
+
+// Función auxiliar para habilitar/deshabilitar campos según configuración guardada
+function toggleGoogleAuthFields() {
+    const clientIdInput = document.getElementById('google-client-id');
+    const domainsInput = document.getElementById('google-domains');
+    
+    if (clientIdInput && domainsInput) {
+        if (googleConfig.enabled) {
+            clientIdInput.disabled = false;
+            domainsInput.disabled = false;
+            clientIdInput.style.opacity = '1';
+            domainsInput.style.opacity = '1';
+        } else {
+            clientIdInput.disabled = true;
+            domainsInput.disabled = true;
+            clientIdInput.style.opacity = '0.6';
+            domainsInput.style.opacity = '0.6';
+        }
+    }
+}
+
+function handleGoogleSignIn(response) {
+    try {
+        // Decodificar el JWT token para obtener la información del usuario
+        const payload = JSON.parse(atob(response.credential.split('.')[1]));
+        
+        console.log('Usuario de Google recibido:', payload);
+        
+        // Verificar si el usuario ya existe en el sistema
+        let existingUser = users.find(u => u.email === payload.email);
+        
+        if (existingUser) {
+            // Usuario existe, hacer login automático
+            user = existingUser;
+            updateUserInfo();
+            updateAccountStatus();
+            updateWixEditorVisibility();
+            showSection('tienda');
+            showAlert(`Bienvenido de vuelta, ${existingUser.name}!`, 'success');
+            console.log('Login exitoso con Google para usuario existente');
+        } else {
+            // Crear nuevo usuario con los datos de Google
+            const newUser = {
+                id: users.length + 1,
+                name: payload.name || 'Usuario Google',
+                email: payload.email,
+                password: 'google_oauth_' + Date.now(), // Password único para usuarios de Google
+                role: 'customer',
+                phone: 'Pendiente de completar',
+                cedula: 'Pendiente de completar',
+                address: 'Pendiente de completar',
+                isActive: true, // Los usuarios de Google se activan automáticamente
+                activationCode: '', // No necesitan código de activación
+                googleUser: true, // Marcar como usuario registrado con Google
+                registrationDate: new Date().toISOString(),
+                avatar: payload.picture || '' // Guardar foto de perfil de Google si está disponible
+            };
+            
+            // Agregar el nuevo usuario al sistema
+            users.push(newUser);
+            user = newUser;
+            saveToStorage();
+            
+            // Actualizar la interfaz
+            updateUserInfo();
+            updateAccountStatus();
+            updateWixEditorVisibility();
+            showSection('tienda');
+            
+            // Mostrar mensaje de bienvenida para nuevo usuario
+            showAlert(`¡Cuenta creada exitosamente con Google! Bienvenido, ${newUser.name}!`, 'success');
+            console.log('Nuevo usuario creado con Google OAuth');
+            
+            // Actualizar estadísticas en admin si está disponible
+            if (document.getElementById('tus')) {
+                loadAdmin();
+            }
+        }
+    } catch (error) {
+        console.error('Error procesando login de Google:', error);
+        showAlert('Error al procesar el login de Google. Inténtalo de nuevo.', 'error');
+    }
+}
+
+// Función para manejar errores de Google OAuth
+function handleGoogleError(error) {
+    console.error('Error de Google OAuth:', error);
+    showAlert('Error al conectar con Google. Verifica tu configuración.', 'error');
 }
 
 function saveEmailConfig() {
@@ -3004,6 +3280,8 @@ function loadAdmin(){
     document.getElementById('categories-count').textContent = Object.keys(categories).length;
     updateEmailStatus();
     initializeDevicePreview();
+    updateGoogleStatus();
+    fillGoogleFields();
 }
 
 function previewImage(input, previewId) {
@@ -3554,22 +3832,60 @@ console.log('🎨 Funciones Wix disponibles:', {
     resetWixDesign
 });
 function initGoogleLogin() {
-    if (typeof google !== 'undefined') {
+    // Solo inicializar si está habilitado y configurado
+    if (!googleConfig.enabled || !googleConfig.clientId) {
+        console.log('Google OAuth no está habilitado o configurado');
+        const buttonContainer = document.getElementById('google-signin-login');
+        if (buttonContainer) {
+            buttonContainer.style.display = 'none';
+        }
+        return;
+    }
+
+    // Verificar que Google Identity Services esté disponible
+    if (typeof google === 'undefined' || !google.accounts) {
+        console.log('Google Identity Services no está disponible aún, reintentando...');
+        // Reintentar después de 2 segundos
+        setTimeout(() => initGoogleLogin(), 2000);
+        return;
+    }
+
+    try {
+        // Inicializar Google Identity Services
         google.accounts.id.initialize({
-            client_id: '464394311844-7amlj67do43jhh40bu4m9fkcnfva344j.apps.googleusercontent.com',
-            callback: (response) => {
-                alert('Google login funcionando - Token recibido');
-                console.log(response);
-            }
+            client_id: googleConfig.clientId,
+            callback: handleGoogleSignIn,
+            auto_select: false,
+            cancel_on_tap_outside: true,
+            use_fedcm_for_prompt: false
         });
         
-        google.accounts.id.renderButton(
-            document.getElementById('google-signin-login'),
-            { theme: 'outline', size: 'large' }
-        );
+        const buttonContainer = document.getElementById('google-signin-login');
+        if (buttonContainer) {
+            // Limpiar contenido anterior
+            buttonContainer.innerHTML = '';
+            
+            // Renderizar el botón de Google
+            google.accounts.id.renderButton(buttonContainer, {
+                theme: 'outline',
+                size: 'large',
+                width: '100%',
+                text: 'signin_with',
+                shape: 'rectangular',
+                logo_alignment: 'left'
+            });
+            
+            // Mostrar el botón
+            buttonContainer.style.display = 'block';
+            console.log('Botón de Google OAuth renderizado correctamente');
+        } else {
+            console.error('No se encontró el contenedor del botón de Google');
+        }
+    } catch (error) {
+        console.error('Error inicializando Google OAuth:', error);
+        handleGoogleError(error);
     }
 }
-
 setTimeout(initGoogleLogin, 2000);
 </script>
 </body>
